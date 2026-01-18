@@ -33,19 +33,25 @@ function AccountMenu() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                    <NavLink className="w-full" to={user ? "/profile" : "/auth/login"}>
+                <DropdownMenuItem className="py-0">
+                    <NavLink
+                        className="w-full h-full py-2"
+                        to={user ? "/profile" : "/auth/login"}>
                         {user ? "Profile" : "Login"}
                     </NavLink>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <NavLink to={user ? "/settings" : "/auth/register"}>
+                <DropdownMenuItem className="py-0">
+                    <NavLink
+                        className="w-full h-full py-2"
+                        to={user ? "/settings" : "/auth/register"}>
                         {user ? "Settings" : "Create an Account"}
                     </NavLink>
                 </DropdownMenuItem>
                 {user && (
-                    <DropdownMenuItem>
-                        <NavLink to="/logout">
+                    <DropdownMenuItem className="py-0">
+                        <NavLink
+                            className="w-full h-full py-2"
+                            to="/logout">
                             Logout
                         </NavLink>
                     </DropdownMenuItem>

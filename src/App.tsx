@@ -10,18 +10,20 @@ import Register from './pages/auth/Register'
 
 function App() {
   return (
-    <Routes>
-      <Route path='/' element={<UserLayout />}>
-        <Route index element={<Home />} />
-        <Route path='/categories' element={<Categories />} />
-        <Route path='/artists' element={<Artists />} />
-        <Route path='/artworks' element={<Artworks />} />
-      </Route>
-      <Route path='/auth' element={<AuthLayout />}>
-        <Route path='/auth/login' element={<Login />} />
-        <Route path='/auth/register' element={<Register />} />
-      </Route>
-    </Routes>
+    <div className='min-h-[47rem] pb-13'>
+      <Routes>
+        <Route path='/' element={<UserLayout />}>
+          <Route index element={<Home />} />
+          <Route path='/categories' element={<Categories />} />
+          <Route path='/artists' element={<Artists />} />
+          <Route path='/artworks' element={<Artworks />} />
+        </Route>
+        <Route path='/auth' element={<AuthLayout />}>
+          <Route path='/auth/login' element={<Login />} />
+          <Route path='/auth/register' element={<Register />} />
+        </Route>
+      </Routes>
+    </div>
   )
 }
 

@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './components/theme-provider.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { Toaster } from 'sonner'
+import Footer from './components/footer.tsx'
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
         <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
           <App />
+          <Footer />
           <Toaster />
         </ThemeProvider>
       </BrowserRouter>

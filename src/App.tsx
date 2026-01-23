@@ -4,7 +4,7 @@ import UserLayout from './layouts/user-layout'
 import Categories from './pages/Categories'
 import Artists from './pages/Artists'
 import Artworks from './pages/Artworks'
-import AuthLayout from './layouts/auth-layout'
+import PublicOnlyRoute from './layouts/public-routes'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 
@@ -18,7 +18,7 @@ function App() {
           <Route path='/artists' element={<Artists />} />
           <Route path='/artworks' element={<Artworks />} />
         </Route>
-        <Route path='/auth' element={<AuthLayout />}>
+        <Route path='/auth' element={<PublicOnlyRoute />}>
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
         </Route>

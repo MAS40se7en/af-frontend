@@ -42,8 +42,8 @@ export const loginFormSchema = z.object({
 });
 
 export const registerFormSchema = z.object({
-    first_name: nameSchema,
-    last_name: nameSchema,
+    firstName: nameSchema,
+    lastName: nameSchema,
     username: z
         .string()
         .trim()
@@ -58,8 +58,8 @@ export const registerFormSchema = z.object({
         }),
     email: emailSchema,
     password: passwordSchema,
-    passConfirm: z.string(),
-}).refine((data) => data.password === data.passConfirm, {
+    passwordConfirm: z.string(),
+}).refine((data) => data.password === data.passwordConfirm, {
     path: ["passConfirm"],
     message: "Passwords do not match.",
 });

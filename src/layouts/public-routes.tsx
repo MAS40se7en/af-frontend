@@ -1,7 +1,15 @@
-import { NavLink, Outlet } from "react-router-dom"
+import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom"
 import { ModeToggle } from "../components/mode-toggle"
+import { useAuth } from "../contexts/AuthContext";
+import { useEffect } from "react";
 
-function AuthLayout() {
+function PublicOnlyRoute() {
+    const { user } = useAuth();
+    
+    if (user) {
+        return <Navigate to="/" replace />
+    }
+
     return (
         <div className="flex flex-col gap-2 justify-center pt-3">
             <div className="px-3">
@@ -41,4 +49,4 @@ function AuthLayout() {
     )
 }
 
-export default AuthLayout
+export default PublicOnlyRoute

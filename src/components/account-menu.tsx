@@ -7,21 +7,21 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import { NavLink } from "react-router-dom";
 
 function AccountMenu() {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-full flex items-center justify-center size-10">
                     {user ? (
-                        user.full_name ?
+                        user.fullName ?
                             <Avatar className='size-9'>
                                 <AvatarImage
                                     src={'/AF.png'}
                                 />
                             </Avatar>
                             : <GeneratedAvatar
-                                seed={'avatar'}
+                                seed={user.fullName || "avatar"}
                                 variant="initials"
                                 className="size-9"
                             />
@@ -48,12 +48,13 @@ function AccountMenu() {
                     </NavLink>
                 </DropdownMenuItem>
                 {user && (
-                    <DropdownMenuItem className="py-0">
-                        <NavLink
-                            className="w-full h-full py-2"
-                            to="/logout">
+                    <DropdownMenuItem className="py-0 mx-0 px-0">
+                        <Button
+                            variant="ghost"
+                            className="w-full h-full"
+                            onClick={signOut}>
                             Logout
-                        </NavLink>
+                        </Button>
                     </DropdownMenuItem>
                 )}
             </DropdownMenuContent>

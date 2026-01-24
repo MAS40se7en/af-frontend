@@ -36,7 +36,7 @@ function AccountMenu() {
                 <DropdownMenuItem className="py-0">
                     <NavLink
                         className="w-full h-full py-2"
-                        to={user ? "/profile" : "/auth/login"}>
+                        to={user ? "/account" : "/auth/login"}>
                         {user ? "Profile" : "Login"}
                     </NavLink>
                 </DropdownMenuItem>

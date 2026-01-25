@@ -1,79 +1,95 @@
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation, type UseMutateFunction } from '@tanstack/react-query';
 import type React from 'react';
 import { useCallback, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
+import { updateProfilePhoto } from '../services/imagesService';
+import { queryClient } from '../lib/tanstack';
+import { toast } from 'sonner';
+import { Ban } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export type FileMetadata = {
-  name: string;
-  size: number;
-  type: string;
-  url: string;
-  id: string;
+    name: string;
+    size: number;
+    type: string;
+    url: string;
+    id: string;
 };
 
 export type FileWithPreview = {
-  file: File | FileMetadata;
-  id: string;
-  preview?: string;
+    file: File | FileMetadata;
+    id: string;
+    preview?: string;
 };
 
 export type FileUploadOptions = {
-  maxFiles?: number;
-  maxSize?: number;
-  accept?: string;
-  multiple?: boolean;
-  initialFiles?: FileMetadata[];
-  onFilesChange?: (files: FileWithPreview[]) => void;
-  onFilesAdded?: (addedFiles: FileWithPreview[]) => void;
-  onError?: (errors: string[]) => void;
+    maxFiles?: number;
+    maxSize?: number;
+    accept?: string;
+    multiple?: boolean;
+    initialFiles?: FileMetadata[];
+    onFilesChange?: (files: FileWithPreview[]) => void;
+    onFilesAdded?: (addedFiles: FileWithPreview[]) => void;
+    onError?: (errors: string[]) => void;
 };
 
 export type FileUploadState = {
-  files: FileWithPreview[];
-  isDragging: boolean;
-  errors: string[];
+    files: FileWithPreview[];
+    isDragging: boolean;
+    errors: string[];
 };
 
 export type FileUploadActions = {
-  addFiles: (files: FileList | File[]) => void;
-  removeFile: (id: string) => void;
-  clearFiles: () => void;
-  clearErrors: () => void;
-  handleDragEnter: (e: DragEvent<HTMLElement>) => void;
-  handleDragLeave: (e: DragEvent<HTMLElement>) => void;
-  handleDragOver: (e: DragEvent<HTMLElement>) => void;
-  handleDrop: (e: DragEvent<HTMLElement>) => void;
-  handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  openFileDialog: () => void;
-  getInputProps: (props?: InputHTMLAttributes<HTMLInputElement>) => InputHTMLAttributes<HTMLInputElement> & {
-    ref: React.Ref<HTMLInputElement>;
-  };
+    addFiles: (files: FileList | File[]) => void;
+    removeFile: (id: string) => void;
+    clearFiles: () => void;
+    clearErrors: () => void;
+    handleDragEnter: (e: DragEvent<HTMLElement>) => void;
+    handleDragLeave: (e: DragEvent<HTMLElement>) => void;
+    handleDragOver: (e: DragEvent<HTMLElement>) => void;
+    handleDrop: (e: DragEvent<HTMLElement>) => void;
+    handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    openFileDialog: () => void;
+    getInputProps: (props?: InputHTMLAttributes<HTMLInputElement>) => InputHTMLAttributes<HTMLInputElement> & {
+        ref: React.Ref<HTMLInputElement>;
+    };
 };
 
-export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions] => {
-  const {
-    maxFiles = Number.POSITIVE_INFINITY,
-    maxSize = Number.POSITIVE_INFINITY,
-    accept = '*',
-    multiple = false,
-    initialFiles = [],
-    onFilesChange,
-    onFilesAdded,
-    onError,
-  } = options;
+export type UpdateProfileAction = {
+    updateAvatar: UseMutateFunction<any, unknown, any, unknown>;
+    isUpdatingAvatar: boolean;
+    isUpdatingAvatarError: boolean;
+    updateAvatarData?: any;
+    updateAvatarError: any;
+    isUpdatingAvatarSuccess: boolean;
+}
 
-  const [state, setState] = useState<FileUploadState>({
-    files: initialFiles.map((file) => ({
-      file,
-      id: file.id,
-      preview: file.url,
-    })),
-    isDragging: false,
-    errors: [],
-  });
+export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions, UpdateProfileAction] => {
+    const { refetchUser } = useAuth();
 
-  const inputRef = useRef<HTMLInputElement>(null);
+    const {
+        maxFiles = Number.POSITIVE_INFINITY,
+        maxSize = Number.POSITIVE_INFINITY,
+        accept = '*',
+        multiple = false,
+        initialFiles = [],
+        onFilesChange,
+        onFilesAdded,
+        onError,
+    } = options;
 
-  const validateFile = useCallback(
+    const [state, setState] = useState<FileUploadState>({
+        files: initialFiles.map((file) => ({
+            file,
+            id: file.id,
+            preview: file.url,
+        })),
+        isDragging: false,
+        errors: [],
+    });
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const validateFile = useCallback(
         (file: File | FileMetadata): string | null => {
             if (file instanceof File) {
                 if (file.size > maxSize) {
@@ -206,7 +222,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
                 onFilesAdded?.(validFiles);
 
                 setState((prev) => {
-                    const newFiles = !multiple ? validFiles : [ ...prev.files, ...validFiles ];
+                    const newFiles = !multiple ? validFiles : [...prev.files, ...validFiles];
                     onFilesChange?.(newFiles);
                     return {
                         ...prev,
@@ -282,7 +298,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     const handleDragLeave = useCallback((e: DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         if (e.currentTarget.contains(e.relatedTarget as Node)) {
             return;
         }
@@ -346,6 +362,29 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         [accept, multiple, handleFileChange],
     );
 
+    const {
+        mutate: updateAvatar,
+        isPending: isUpdatingAvatar,
+        isError: isUpdatingAvatarError,
+        error: updateAvatarError,
+        isSuccess: isUpdatingAvatarSuccess
+    } = useMutation({
+        mutationKey: ['update-avatar'],
+        mutationFn: updateProfilePhoto,
+        onSuccess: async () => {
+            console.log('Avatar updated successfully');
+            toast.success('Avatar updated successfully.');
+            await refetchUser();
+        },
+        onError: (error) => {
+            console.error('Error updating avatar', error);
+            toast('error updating avatar.', {
+                description: error.message,
+                icon: <Ban className="text-destructive mr-4" />,
+            });
+        }
+    })
+
     return [
         state,
         {
@@ -360,6 +399,13 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
             handleFileChange,
             openFileDialog,
             getInputProps,
+        },
+        {
+            updateAvatar,
+            isUpdatingAvatar,
+            isUpdatingAvatarError,
+            updateAvatarError,
+            isUpdatingAvatarSuccess
         }
     ];
 };

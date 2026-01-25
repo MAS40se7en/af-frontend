@@ -9,6 +9,9 @@ import Register from './pages/auth/Register'
 import UserRoutes from './routes/user-routes'
 import AccountLayout from './layouts/account-layout'
 import Profile from './pages/account/Profile'
+import MyArtworks from './pages/account/MyArtworks'
+import MyPosts from './pages/account/MyPosts'
+import ManageInfo from './pages/account/ManageInfo'
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
           <Route path='/artworks' element={<Artworks />} />
           <Route path='/account' element={<AccountLayout />}>
             <Route index element={<Profile />} />
+            <Route path='/account/my-artworks' element={<MyArtworks />} />
+            <Route path='/account/my-posts' element={<MyPosts />} />
+            <Route path='/account/manage-info' element={<ManageInfo />} />
           </Route>
         </Route>
         <Route path='/auth' element={<PublicOnlyRoute />}>

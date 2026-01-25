@@ -11,6 +11,7 @@ type User = {
     firstName: string;
     lastName: string;
     fullName: string;
+    imageUrl: string;
 };
 
 interface AuthContextType {

@@ -10,8 +10,8 @@ const UserRoutes = () => {
     return <div>Loading...</div>
   }
 
-  if (!user) {
-    return <Navigate to="/auth/login" state={{ from: location.pathname }} replace />
+  if (!isUserLoading && !user) {
+    return <Navigate to="/auth/login" state={{ from: location }} replace />
   }
 
   return (

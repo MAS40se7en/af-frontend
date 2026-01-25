@@ -15,7 +15,7 @@ const NavigationHeader = () => {
     }, [location]);
 
     return (
-        <div className="w-full sticky top-0 right-0 left-0 bg-background dark:bg-black px-4 border-b-2">
+        <div className="w-full sticky top-0 right-0 left-0 bg-background/80 dark:bg-black/80 px-4 border-b-2 z-50 backdrop-blur-sm">
             <div className="h-12 flex items-center justify-between lg:w-3/5 mx-auto">
                 <div className="flex items-center gap-7">
                     <Drawer open={openDrawer} onOpenChange={setOpenDrawer} direction="right">

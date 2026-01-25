@@ -5,17 +5,17 @@ import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
 
 interface AvatarUploadProps {
-    image: string;
+    image: string | null;
     maxSize?: number;
     className?: string;
     onFileChange?: (file: FileWithPreview | null) => void;
-    defaultAvatar?: string;
+    setDrawerOpen?: (open: boolean) => void;
 }
 
-function EditImage({ image, maxSize, className, onFileChange }: AvatarUploadProps) {
+function EditImage({ image, maxSize, className, onFileChange, setDrawerOpen }: AvatarUploadProps) {
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
-    const imgSrc = '/AF.png';
+    const imgSrc = image || '/AF.png';
 
     const handleFileUploadChange = (currentFiles: FileWithPreview[]) => {
         const file = currentFiles[0] || null;
@@ -49,6 +49,11 @@ function EditImage({ image, maxSize, className, onFileChange }: AvatarUploadProp
             openFileDialog,
             getInputProps,
         },
+        {
+            updateAvatar,
+            isUpdatingAvatar,
+            isUpdatingAvatarSuccess
+        }
     ] = useFileUpload({
         maxFiles: 1,
         maxSize,
@@ -58,8 +63,25 @@ function EditImage({ image, maxSize, className, onFileChange }: AvatarUploadProp
         onFilesChange: handleFileUploadChange,
     });
 
+    useEffect(() => {
+    if (isUpdatingAvatarSuccess) {
+        clearFiles();
+        setSelectedImage(undefined);
+        setDrawerOpen?.(false);
+    }
+}, [isUpdatingAvatarSuccess, clearFiles, setDrawerOpen]);
+
+
     const previewUrl = selectedImage || imgSrc;
     const userHasImage = !!image || !!selectedImage;
+
+    const handleUpload = () => {
+        if (files.length === 0) {
+            return;
+        }
+
+        updateAvatar(files[0].file);
+    }
 
 
     return (
@@ -118,7 +140,7 @@ function EditImage({ image, maxSize, className, onFileChange }: AvatarUploadProp
                             </p>
                         </div>
 
-                        <Button onClick={openFileDialog}>
+                        <Button variant="outline" onClick={openFileDialog}>
                             <Upload className="h-4 w-4" />
                             Select images
                         </Button>
@@ -138,6 +160,8 @@ function EditImage({ image, maxSize, className, onFileChange }: AvatarUploadProp
                     <Button 
                         variant="secondary"
                         className="flex-1"
+                        onClick={handleUpload}
+                        disabled={isUpdatingAvatar}
                     >
                         Save
                     </Button>

@@ -4,13 +4,21 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "../contexts/AuthContext"
 import { GeneratedAvatar } from "./generated-avatar";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Separator } from "./ui/separator";
 
 function AccountMenu() {
     const { user, signOut } = useAuth();
+    const [open, setOpen] = useState(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        setOpen(false);
+    }, [location]);
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-full flex items-center justify-center size-10">
                     {user ? (
@@ -36,7 +44,7 @@ function AccountMenu() {
                 <DropdownMenuItem className="py-0">
                     <NavLink
                         className="w-full h-full py-2"
-                        to={user ? "/profile" : "/auth/login"}>
+                        to={user ? "/account" : "/auth/login"}>
                         {user ? "Profile" : "Login"}
                     </NavLink>
                 </DropdownMenuItem>
@@ -48,14 +56,24 @@ function AccountMenu() {
                     </NavLink>
                 </DropdownMenuItem>
                 {user && (
-                    <DropdownMenuItem className="py-0 mx-0 px-0">
-                        <Button
-                            variant="ghost"
-                            className="w-full h-full"
-                            onClick={signOut}>
-                            Logout
-                        </Button>
-                    </DropdownMenuItem>
+                    <>
+                        <DropdownMenuItem className="py-0">
+                            <NavLink
+                                className="w-full h-full py-2"
+                                to="/account/my-artworks">
+                                My Artworks
+                            </NavLink>
+                        </DropdownMenuItem>
+                        <Separator className="my-1" />
+                        <DropdownMenuItem className="py-0 mx-0 px-0">
+                            <Button
+                                variant="outline"
+                                className="w-full h-full"
+                                onClick={signOut}>
+                                Logout
+                            </Button>
+                        </DropdownMenuItem>
+                    </>
                 )}
             </DropdownMenuContent>
         </DropdownMenu>

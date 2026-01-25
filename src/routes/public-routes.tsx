@@ -1,13 +1,23 @@
-import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom"
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { ModeToggle } from "../components/mode-toggle"
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 
 function PublicOnlyRoute() {
-    const { user } = useAuth();
-    
-    if (user) {
-        return <Navigate to="/" replace />
+    const { user, isUserLoading } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const redirectPath = location.state?.from || '/';
+
+    useEffect(() => {
+        if (!isUserLoading && user) {
+            navigate(redirectPath, { replace: true });
+        }
+    }, [user, isUserLoading, navigate, redirectPath]);
+
+    if (isUserLoading || user) {
+        return <div>Loading...</div>;
     }
 
     return (

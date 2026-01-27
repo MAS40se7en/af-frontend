@@ -1,4 +1,4 @@
-import ManageInfoCard from "../../components/account/manage-info-card"
+import ManageInfoCard from "@/components/account/manage-info-card"
 
 function ManageInfo() {
   return (

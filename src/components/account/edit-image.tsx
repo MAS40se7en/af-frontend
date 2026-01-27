@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { ImageIcon, Upload, User } from "lucide-react";
-import { formatBytes, useFileUpload, type FileMetadata, type FileWithPreview } from "../../hooks/use-file-upload";
-import { cn } from "../../lib/utils";
-import { Button } from "../ui/button";
+import { useFileUpload, type FileWithPreview } from "@/hooks/use-file-upload";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface AvatarUploadProps {
     image: string | null;
@@ -12,7 +12,7 @@ interface AvatarUploadProps {
     setDrawerOpen?: (open: boolean) => void;
 }
 
-function EditImage({ image, maxSize, className, onFileChange, setDrawerOpen }: AvatarUploadProps) {
+function EditImage({ image, maxSize, onFileChange, setDrawerOpen }: AvatarUploadProps) {
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
     const imgSrc = image || '/AF.png';
@@ -40,7 +40,6 @@ function EditImage({ image, maxSize, className, onFileChange, setDrawerOpen }: A
     const [
         { files, isDragging, errors },
         {
-            removeFile,
             clearFiles,
             handleDragEnter,
             handleDragLeave,

@@ -1,11 +1,11 @@
-import { QueryClient, useMutation, type UseMutateFunction } from '@tanstack/react-query';
+import { useMutation, type UseMutateFunction } from '@tanstack/react-query';
 import type React from 'react';
 import { useCallback, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
-import { updateProfilePhoto } from '../services/imagesService';
-import { queryClient } from '../lib/tanstack';
+import { updateProfilePhoto } from '@/services/imagesService';
 import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { v4 as uuidv4 } from 'uuid';
 
 export type FileMetadata = {
     name: string;
@@ -13,11 +13,13 @@ export type FileMetadata = {
     type: string;
     url: string;
     id: string;
+    order: number;
 };
 
 export type FileWithPreview = {
     file: File | FileMetadata;
     id: string;
+    order?: number;
     preview?: string;
 };
 
@@ -61,6 +63,12 @@ export type UpdateProfileAction = {
     updateAvatarData?: any;
     updateAvatarError: any;
     isUpdatingAvatarSuccess: boolean;
+}
+
+export function isNativeFile(
+    value: File | FileMetadata,
+): value is File {
+    return value instanceof File;
 }
 
 export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions, UpdateProfileAction] => {
@@ -136,7 +144,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
 
     const generateUniqueId = useCallback((file: File | FileMetadata): string => {
         if (file instanceof File) {
-            return `${file.name}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+            return uuidv4();
         }
         return file.id;
     }, []);

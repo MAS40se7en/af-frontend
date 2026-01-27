@@ -1,11 +1,11 @@
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form"
-import { Input } from "../../ui/input"
-import { Button } from "../../ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form";
-import { registerFormSchema } from "../../../lib/zod-schemas";
+import { registerFormSchema } from "@/lib/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type z from "zod";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 function RegisterForm() {
     const { signUp } = useAuth();

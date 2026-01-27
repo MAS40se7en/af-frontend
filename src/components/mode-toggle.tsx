@@ -1,6 +1,5 @@
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useTheme } from "./theme-provider";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Moon, Sun } from "lucide-react";
 

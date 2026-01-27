@@ -1,6 +1,6 @@
 import { PencilLine } from "lucide-react";
-import { GeneratedAvatar } from "../generated-avatar";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { GeneratedAvatar } from "@/components/generated-avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "../ui/drawer";
 import { useState } from "react";
 import EditImage from "./edit-image";

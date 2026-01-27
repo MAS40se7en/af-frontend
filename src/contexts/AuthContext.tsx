@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { fetchUserProfile, signInUser, signOutUser, signUpUser, type LoginUserData, type RegisterUserData } from '../services/authService';
+import { fetchUserProfile, signInUser, signOutUser, signUpUser, type LoginUserData, type RegisterUserData } from '@/services/authService';
 import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
 

@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+export const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
 const emailSchema = z
     .email("Please enter a valid email address.");
 
@@ -64,6 +67,48 @@ export const registerFormSchema = z.object({
     message: "Passwords do not match.",
 });
 
+const fileMetadataSchema = z.object({
+    name: z.string(),
+    size: z.number().positive(),
+    type: z.string(),
+    url: z.url(),
+    id: z.string(),
+    order: z.number().nonnegative()
+});
+
+const nativeFileSchema = z.instanceof(File);
+
+const fileWithPreviewSchema = z.object({
+    id: z.string(),
+    order: z.number().optional(),
+    preview: z.string().optional(),
+    file: z.union([nativeFileSchema, fileMetadataSchema])
+});
+
+export const filesArraySchema = (options?: {
+    maxFiles?: number;
+    maxSize?: number;
+    accept?: string[];
+}) => z
+        .array(fileWithPreviewSchema)
+        .superRefine((files, ctx) => {
+            if (options?.maxFiles && files.length > options.maxFiles) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: `Maximum ${options.maxFiles} files allowed.`
+                });
+            }
+
+            for (const f of files) {
+                if (f.file instanceof File && options?.maxSize && f.file.size > options.maxSize) {
+                    ctx.addIssue({
+                        code: 'custom',
+                        message: `File ${f.file.name} is too large.`
+                    });
+                }
+            }
+        });
+
 export const createArtworkSchema = z.object({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters long."
@@ -75,5 +120,14 @@ export const createArtworkSchema = z.object({
     }).max(500, {
         message: "Description must be at most 500 characters long."
     }),
-    categoryId: z.number(),
+    categoryId: z.number()
 });
+
+export const createArtworkFormSchema = z.object({
+    artwork: createArtworkSchema,
+    files: filesArraySchema({
+        maxFiles: 10,
+        maxSize: MAX_FILE_SIZE,
+        accept: ACCEPTED_TYPES
+    })
+})

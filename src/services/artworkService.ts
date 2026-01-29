@@ -4,6 +4,8 @@ import { api } from "@/lib/axios";
 import type { createArtworkSchema } from "@/lib/zod-schemas";
 
 export const createArtwork = async ({ files, artwork }: { files: FileWithPreview[], artwork: z.infer<typeof createArtworkSchema> }) => {
+    console.log('Artwork added successfully', files, artwork);
+    return;
     const formData = new FormData();
 
     formData.append('artwork', JSON.stringify(artwork));

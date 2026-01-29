@@ -45,6 +45,7 @@ export type FileUploadActions = {
     removeFile: (id: string) => void;
     clearFiles: () => void;
     clearErrors: () => void;
+    getFilesForValidation: () => FileWithPreview[];
     handleDragEnter: (e: DragEvent<HTMLElement>) => void;
     handleDragLeave: (e: DragEvent<HTMLElement>) => void;
     handleDragOver: (e: DragEvent<HTMLElement>) => void;
@@ -54,6 +55,7 @@ export type FileUploadActions = {
     getInputProps: (props?: InputHTMLAttributes<HTMLInputElement>) => InputHTMLAttributes<HTMLInputElement> & {
         ref: React.Ref<HTMLInputElement>;
     };
+    reorderFiles: (fromIndex: number, toIndex: number) => void;
 };
 
 export type UpdateProfileAction = {
@@ -231,10 +233,14 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
 
                 setState((prev) => {
                     const newFiles = !multiple ? validFiles : [...prev.files, ...validFiles];
-                    onFilesChange?.(newFiles);
+
+                    const ordered = normalizeOrder(newFiles);
+
+                    onFilesChange?.(ordered);
+
                     return {
                         ...prev,
-                        files: newFiles,
+                        files: ordered,
                         errors
                     };
                 });
@@ -277,7 +283,9 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
                     URL.revokeObjectURL(fileToRemove.preview);
                 }
 
-                const newFiles = prev.files.filter((file) => file.id !== id);
+                const newFiles = normalizeOrder(
+                    prev.files.filter((file) => file.id !== id)
+                );
                 onFilesChange?.(newFiles);
 
                 return {
@@ -296,6 +304,10 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
             errors: [],
         }));
     }, []);
+
+    const getFilesForValidation = useCallback(
+        () => state.files, [state.files]
+    )
 
     const handleDragEnter = useCallback((e: DragEvent<HTMLElement>) => {
         e.preventDefault();
@@ -356,6 +368,25 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         }
     }, []);
 
+    const reorderFiles = useCallback((fromIndex: number, toIndex: number) => {
+        setState(prev => {
+            const updated = reorder(prev.files, fromIndex, toIndex)
+                    .map((file, index) => ({
+                        ...file,
+                        order: index
+                    }));
+
+            const reordered = normalizeOrder(updated);
+
+            onFilesChange?.(reordered);
+
+            return {
+                ...prev,
+                files: reordered
+            }
+        })
+    }, [onFilesChange])
+
     const getInputProps = useCallback(
         (props: InputHTMLAttributes<HTMLInputElement> = {}) => {
             return {
@@ -407,6 +438,8 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
             handleFileChange,
             openFileDialog,
             getInputProps,
+            getFilesForValidation,
+            reorderFiles
         },
         {
             updateAvatar,
@@ -430,3 +463,14 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
     return Number.parseFloat((bytes / k ** i).toFixed(dm)) + sizes[i];
 }
 
+function reorder<T>(list: T[], from: number, to: number): T[] {
+    const updated = [...list];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    return updated;
+}
+
+const normalizeOrder = (files: FileWithPreview[]) => files.map((f, index) => ({
+    ...f,
+    order: index
+}))

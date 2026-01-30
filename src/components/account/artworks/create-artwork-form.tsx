@@ -9,6 +9,8 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from "@/components/ui/input-group"
 import { Button } from "@/components/ui/button"
+import UseCategories from "@/hooks/use-categories"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const maxSize = MAX_FILE_SIZE;
 
@@ -18,6 +20,7 @@ const maxFiles = 5
 
 function CreateArtworkForm() {
   const { addArtwork, isAddingArtwork, addArtworkError } = useArtworks();
+  const { categories, isPending, error } = UseCategories();
 
   const [
     fileState,
@@ -34,7 +37,7 @@ function CreateArtworkForm() {
     defaultValues: {
       title: "",
       description: "",
-      categoryId: 0
+      categoryId: undefined
     }
   });
 
@@ -84,20 +87,20 @@ function CreateArtworkForm() {
       />
       <div>
         <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
+          <FieldGroup className="mb-5">
             <Controller
               name="title"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="form-rhf-demo-title">
-                    Bug Title
+                    Artwork Title
                   </FieldLabel>
                   <Input
                     {...field}
                     id="form-rhf-demo-title"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Login button not working on mobile"
+                    placeholder="Give your artwork a title."
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
@@ -118,14 +121,14 @@ function CreateArtworkForm() {
                     <InputGroupTextarea
                       {...field}
                       id="form-rhf-demo-description"
-                      placeholder="I'm having an issue with the login button on mobile."
+                      placeholder="Describe your artwork how you see like."
                       rows={6}
                       className="min-h-24 resize-none"
                       aria-invalid={fieldState.invalid}
                     />
                     <InputGroupAddon align="block-end">
                       <InputGroupText className="tabular-nums">
-                        {field.value.length}/100 characters
+                        {field.value.length}/1500 characters
                       </InputGroupText>
                     </InputGroupAddon>
                   </InputGroup>
@@ -135,9 +138,46 @@ function CreateArtworkForm() {
                 </Field>
               )}
             />
+            <Controller
+              name="categoryId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-demo-category">
+                    Category
+                  </FieldLabel>
+                  <InputGroup>
+                    <Select
+                      value={field.value ? String(field.value) : undefined}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                    >
+                      <SelectTrigger className="w-full" aria-invalid={fieldState.invalid} disabled={isPending}>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Categories</SelectLabel>
+                          {categories?.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={String(category.id)}
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
           </FieldGroup>
-          <Button type="submit">
-            Submit
+          <Button type="submit" className="w-full">
+            Create New Artwork
           </Button>
         </form>
       </div>

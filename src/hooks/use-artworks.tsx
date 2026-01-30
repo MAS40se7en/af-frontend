@@ -7,11 +7,13 @@ import { createArtwork, fetchMyArtworks, removeArtwork, updateArtworkDetails } f
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack";
 import { Ban } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import type { Category } from "./use-categories";
 
 export type Artwork = {
     title: string;
     description: string;
-    category: string;
+    category: Category;
     user: string;
     images: FileWithPreview[];
     createdAt: Date;
@@ -19,11 +21,18 @@ export type Artwork = {
 }
 
 export type ArtworkList = {
-    images: FileWithPreview[];
+    id: number;
+    images: listImageInfo[];
     title: string;
     description: string;
-    category: string;
+    category: Category;
     createdAt: Date;
+}
+
+export type listImageInfo = {
+    id: number;
+    imageUrl: string;
+    order: number
 }
 
 export type ArtworksActions = {
@@ -45,6 +54,7 @@ export type ArtworksActions = {
 
 export const useArtworks = (): ArtworksActions => {
     const { user, isUserLoading } = useAuth();
+    const navigate = useNavigate();
 
     if (!user || isUserLoading ) {
         return {}
@@ -71,6 +81,8 @@ export const useArtworks = (): ArtworksActions => {
             toast.success('Artwork created successfully.');
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+
+            navigate('/account/my-artworks');
         },
         onError: (error: any) => {
             console.error('Error adding artwork', error);

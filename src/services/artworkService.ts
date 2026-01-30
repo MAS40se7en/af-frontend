@@ -5,18 +5,22 @@ import type { createArtworkSchema } from "@/lib/zod-schemas";
 
 export const createArtwork = async ({ files, artwork }: { files: FileWithPreview[], artwork: z.infer<typeof createArtworkSchema> }) => {
     console.log('Artwork added successfully', files, artwork);
-    return;
     const formData = new FormData();
 
-    formData.append('artwork', JSON.stringify(artwork));
+    formData.append('artwork',
+        new Blob([JSON.stringify(artwork)], { type: 'application/json' })
+    );
 
     formData.append(
         'orderMetadata',
-        JSON.stringify(
-            files.map(f => ({
-                id: f.id,
-                order: f.order
-            }))
+        new Blob(
+            [JSON.stringify(
+                files.map(f => ({
+                    id: f.id,
+                    order: f.order
+                }))
+            )],
+            { type: 'application/json' }
         )
     )
 
@@ -27,7 +31,9 @@ export const createArtwork = async ({ files, artwork }: { files: FileWithPreview
         }
     })
 
-    const response = await api.post('/artworks', formData);
+    console.log("full form data: ", [...formData.entries()]);
+
+    const response = await api.post('/artworks/create-artwork', formData);
 
     return response.data;
 }

@@ -128,7 +128,9 @@ function UploadArtworkImages({
                     alt={fileItem.file.name}
                     className="h-full w-full rounded-lg border object-cover transition-transform group-hover:scale-105"
                   />
-                  <span className="text-xs">Order: {fileItem.order}</span>
+                  <p className="text-xs text-center w-full font-semibold">
+                    {fileItem.order ? fileItem.order + 1 : index + 1}
+                  </p>
                 </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center rounded-lg border bg-muted">

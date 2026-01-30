@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import NavigationHeader from "../components/navigation-header";
-import { useAuth } from "../contexts/AuthContext";
+import NavigationHeader from "@/components/navigation-header";
+import { useAuth } from "@/contexts/AuthContext";
 
 const UserRoutes = () => {
   const { user, isUserLoading } = useAuth();

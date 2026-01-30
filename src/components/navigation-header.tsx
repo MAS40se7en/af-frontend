@@ -1,4 +1,4 @@
-import { NavLink, useLocation, useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { ModeToggle } from "./mode-toggle"
 import AccountMenu from "./account-menu"
 import { Menu } from "lucide-react"

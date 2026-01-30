@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
-import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { loginFormSchema } from "../../../lib/zod-schemas";
+import { loginFormSchema } from "@/lib/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type z from "zod";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 function LoginForm() {
     const { signIn } = useAuth();

@@ -1,8 +1,8 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
-import AccountImage from "../components/account/account-image";
-import { cn } from "../lib/utils";
-import AccountNav from "../components/account/account-nav";
+import { useAuth } from "@/contexts/AuthContext"
+import AccountImage from "@/components/account/account-image";
+import { cn } from "@/lib/utils";
+import AccountNav from "@/components/account/account-nav";
 
 function AccountLayout() {
     const { user } = useAuth();

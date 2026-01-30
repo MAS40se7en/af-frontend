@@ -1,7 +1,7 @@
 import { User } from "lucide-react"
 import { Button } from "./ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { GeneratedAvatar } from "./generated-avatar";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { NavLink, useLocation } from "react-router-dom";

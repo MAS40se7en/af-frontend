@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { NavigationMenu, NavigationMenuLink, NavigationMenuList } from "../ui/navigation-menu"
+import { NavigationMenu, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 
 function AccountNav() {
   return (

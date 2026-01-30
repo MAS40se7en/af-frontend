@@ -1,4 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 function ManageInfoCard() {
   return (

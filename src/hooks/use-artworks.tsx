@@ -3,19 +3,48 @@ import type { FileWithPreview } from "./use-file-upload";
 import { createArtworkSchema } from "@/lib/zod-schemas";
 import type z from "zod";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createArtwork, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
+import { createArtwork, fetchArtwork, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack";
 import { Ban } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Category } from "./use-categories";
 
+export type User = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    imageUrl: string;
+    roleName: string;
+    fullName: string;
+}
+
+export type UserLike = {
+    id: number;
+    username: string;
+    imageUrl: string;
+}
+
+export type Comment = {
+    id: number;
+    text: string;
+    user: User;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export type Artwork = {
     title: string;
     description: string;
     category: Category;
-    user: string;
-    images: FileWithPreview[];
+    user: User;
+    images: listImageInfo[];
+    likeCount: number;
+    likedBy: UserLike[];
+    commentCount: number;
+    comments: Comment[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,7 +55,10 @@ export type ArtworkList = {
     title: string;
     description: string;
     category: Category;
+    user: User;
     createdAt: Date;
+    likeCount: number;
+    commentCount: number;
 }
 
 export type listImageInfo = {
@@ -157,6 +189,25 @@ export const useArtworks = (): ArtworksActions => {
         isDeletingArtwork,
         isDeletingArtworkError,
         myArtworks,
-        myArtworksError
+        myArtworksError,
+    }
+}
+
+
+export const useArtwork = (artWorkId: number): {
+    artwork?: Artwork,
+    artworkError?: any
+} => {
+    const {
+        data: artwork,
+        error: artworkError
+    } = useSuspenseQuery({
+        queryKey: ['artwork', artWorkId],
+        queryFn: fetchArtwork,
+    });
+
+    return {
+        artwork,
+        artworkError
     }
 }

@@ -2,6 +2,7 @@ import type z from "zod";
 import { isNativeFile, type FileWithPreview } from "@/hooks/use-file-upload";
 import { api } from "@/lib/axios";
 import type { createArtworkSchema } from "@/lib/zod-schemas";
+import type { QueryFunctionContext } from "@tanstack/react-query";
 
 export const createArtwork = async ({ files, artwork }: { files: FileWithPreview[], artwork: z.infer<typeof createArtworkSchema> }) => {
     console.log('Artwork added successfully', files, artwork);
@@ -74,6 +75,16 @@ export const removeArtwork = async (artworkId: number) => {
 
 export const fetchMyArtworks = async () => {
     const response = await api.get('/artworks/my-artworks')
+
+    return response.data;
+}
+
+export const fetchArtwork = async (
+    { queryKey }: QueryFunctionContext<[string, number]>
+) => {
+    const [, artworkId] = queryKey;
+    
+    const response = await api.get('/artworks/' + artworkId)
 
     return response.data;
 }

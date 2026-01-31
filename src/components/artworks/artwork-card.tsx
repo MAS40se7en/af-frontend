@@ -54,11 +54,11 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
           <div className="flex gap-2 items-center">
             <div className="flex gap-1 items-center">
               <Heart className="size-4 text-primary-foreground fill-primary-foreground" />
-              <span className="text-xs">{"likes"}</span>
+              <span className="text-xs">{artwork.likeCount}</span>
             </div>
             <div className="flex gap-1 items-center">
               <MessageSquare className="size-4 text-primary-foreground fill-primary-foreground" />
-              <span className="text-xs">{"comms"}</span>
+              <span className="text-xs">{artwork.commentCount}</span>
             </div>
           </div>
           <Badge>{new Date(artwork.createdAt).toDateString()}</Badge>

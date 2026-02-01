@@ -31,10 +31,14 @@ const ArtworkDetailsWrapper = ({
                 <ImagesWrapper screenSize={screenSize} artwork={artwork} />
                 {screenSize === "md" || screenSize === "lg" || screenSize === "xl" || screenSize === "2xl" ? (
                     <>
-                        <Separator className="my-5" />
+                        <Separator className="my-2" />
                         <ErrorBoundary fallback={<div>error</div>}>
                             <Suspense fallback={<div>loading...</div>}>
-                                <ArtworkComments refetchArtwork={refetchArtwork} artworkId={artwork.id} />
+                                <ArtworkComments 
+                                isUserArtist={isUserArtist} 
+                                userId={userId} 
+                                refetchArtwork={refetchArtwork} 
+                                artworkId={artwork.id} />
                             </Suspense>
                         </ErrorBoundary>
                     </>
@@ -48,7 +52,11 @@ const ArtworkDetailsWrapper = ({
                         <Separator className="my-5" />
                         <ErrorBoundary fallback={<div>error</div>}>
                             <Suspense fallback={<div>loading...</div>}>
-                                <ArtworkComments refetchArtwork={refetchArtwork} artworkId={artwork.id} />
+                                <ArtworkComments 
+                                isUserArtist={isUserArtist}
+                                userId={userId} 
+                                refetchArtwork={refetchArtwork} 
+                                artworkId={artwork.id} />
                             </Suspense>
                         </ErrorBoundary>
                     </>

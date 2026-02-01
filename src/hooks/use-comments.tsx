@@ -1,19 +1,38 @@
-import { getComments, removeComment } from "@/services/commentService"
+import { addReply, getComments, removeComment } from "@/services/commentService"
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { addComment } from "@/services/artworkService"
 import { toast } from "sonner"
 import { queryClient } from "@/lib/tanstack"
 import { Ban } from "lucide-react"
-import type { commentSchema } from "@/lib/zod-schemas"
+import type { commentSchema, replySchema } from "@/lib/zod-schemas"
 import type z from "zod"
 import type { User } from "./use-artworks"
+import { useState } from "react"
 
-export type Comment = {
+export type Reply = {
     id: number;
     text: string;
     user: User;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export type Comment = {
+    id: number;
+    text: string;
+    user: User;
+    replies: Reply[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export type ReplyActions = {
+    postReply?: ({ commentId, reply, artworkId }: { commentId: number, reply: z.infer<typeof replySchema>, artworkId: number }) => void;
+    isPostingReply: boolean,
+    isPostingReplyError: boolean,
+    postReplyError: any
+    postReplySuccess: boolean
+    lastRepliedCommentId: number | null;
 }
 
 export type CommentActions = {
@@ -22,14 +41,15 @@ export type CommentActions = {
     isDeletingCommentSuccess: boolean,
     deleteCommentError: any,
 
-    postComment?: ({artworkId, comment}: {artworkId: number, comment: z.infer<typeof commentSchema>}) => void;
+    postComment?: ({ artworkId, comment }: { artworkId: number, comment: z.infer<typeof commentSchema> }) => void;
     isPostingComment: boolean,
     isPostingCommentError: boolean,
     postCommentError: any,
     postCommentSuccess: boolean,
 }
 
-const useCommentsActions = (): CommentActions => {
+const useCommentsActions = (): [CommentActions, ReplyActions] => {
+    const [lastRepliedCommentId, setLastRepliedCommentId] = useState<number | null>(null);
     const {
         mutate: deleteComment,
         isPending: isDeletingComment,
@@ -64,18 +84,52 @@ const useCommentsActions = (): CommentActions => {
         }
     })
 
-  return {
-    deleteComment,
-    isDeletingComment,
-    isDeletingCommentSuccess,
-    deleteCommentError,
+    const {
+        mutate: postReply,
+        isPending: isPostingReply,
+        isError: isPostingReplyError,
+        error: postReplyError,
+        isSuccess: postReplySuccess
+    } = useMutation({
+        mutationKey: ['add-reply'],
+        mutationFn: addReply,
+        onSuccess: ({ artworkId, commentId }) => {
+            toast.success('Reply added successfully.');
+            setLastRepliedCommentId(commentId);
+            queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
+            queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
+            queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+        },
+        onError: (error: any) => {
+            console.error('Error adding reply', error);
+            toast('Error adding reply.', {
+                description: error.response?.data || error.message,
+                icon: <Ban className="text-destructive mr-4" />,
+            });
+        }
+    });
 
-    postComment,
-    isPostingComment,
-    isPostingCommentError,
-    postCommentError,
-    postCommentSuccess
-  }
+    return [
+        {
+            deleteComment,
+            isDeletingComment,
+            isDeletingCommentSuccess,
+            deleteCommentError,
+
+            postComment,
+            isPostingComment,
+            isPostingCommentError,
+            postCommentError,
+            postCommentSuccess,
+        }, {
+            postReply,
+            isPostingReply,
+            isPostingReplyError,
+            postReplyError,
+            postReplySuccess,
+            lastRepliedCommentId
+        }
+    ]
 }
 
 export const useGetComments = (artworkId: number): {

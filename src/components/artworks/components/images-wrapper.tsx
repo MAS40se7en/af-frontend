@@ -12,7 +12,7 @@ interface props {
 
 const ImagesWrapper = ({ artwork, screenSize }: props) => {
     return (
-        <div>
+        <div className="space-y-3">
             <Carousel className="w-full md:w-130 p-0">
                 <CarouselContent className="min-w-full">
                     {artwork?.images?.map((image) => (
@@ -34,7 +34,7 @@ const ImagesWrapper = ({ artwork, screenSize }: props) => {
                     ))}
                 </CarouselContent>
                 <CarouselPrevious variant={"secondary"} className="ml-16 size-10 justify-center" />
-                <CarouselNext variant={"secondary"} className="mr-20 size-10 justify-center" />
+                <CarouselNext variant={"secondary"} className="mr-16 size-10 justify-center" />
             </Carousel>
             <div className="pr-5 flex justify-between">
                 <div className="flex items-center gap-2">

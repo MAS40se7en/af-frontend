@@ -1,6 +1,11 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+export type sortOptions = {
+    value: "latest" | "oldest",
+    label: "Latest" | "Oldest"
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -23,4 +28,12 @@ export function formatDate(date: Date | undefined) {
   const year = date.getFullYear();
 
   return `${day}.${month}.${year}`;
+}
+
+export function sortItemsByDate({items, sortOptions}: {items: any[], sortOptions: sortOptions}) {
+  if (sortOptions.value === "latest") {
+    return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  } else if (sortOptions.value === "oldest") {
+    return items.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+  }
 }

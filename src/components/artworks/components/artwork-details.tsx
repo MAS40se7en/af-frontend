@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
 import type { Artwork } from "@/hooks/use-artworks";
 import { Link } from "react-router-dom";
 
@@ -25,11 +26,19 @@ const ArtworkDetails = ({ artwork, isUserArtist }: props) => {
                 </div>
             </div>
             {isUserArtist && (
-                <Link 
-                className="w-full text-center bg-muted hover:bg-muted-foreground py-2 rounded-lg transition-colors"
-                to={`/artworks/${artwork?.id}/edit`}>
-                    Edit Artwork
-                </Link>
+                <>
+                    <Link
+                        className="w-full text-center bg-muted hover:bg-muted-foreground py-2 rounded-lg transition-colors"
+                        to={`/artworks/${artwork?.id}/edit`}>
+                        Edit Artwork
+                    </Link>
+                    <Button
+                        variant="destructive"
+                        className="flex justify-center"
+                    >
+                        Delete Artwork
+                    </Button>
+                </>
             )}
         </div>
     )

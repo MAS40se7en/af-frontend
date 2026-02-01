@@ -5,11 +5,7 @@ import UseCategories from "@/hooks/use-categories";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
-export type sortOptions = {
-    value: "latest" | "oldest",
-    label: "Latest" | "Oldest"
-}
+import { sortItemsByDate, type sortOptions } from "@/lib/utils";
 
 function MyArtworksWrapper() {
     const { myArtworks, myArtworksError } = useArtworks();
@@ -37,9 +33,7 @@ function MyArtworksWrapper() {
                 artwork => artwork.category?.code === selectedCategory
             );
 
-    const sortedArtworks = sort.value === "latest"
-        ? filteredArtworks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        : filteredArtworks.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const sortedArtworks = sortItemsByDate({ items: filteredArtworks, sortOptions: sort });
 
 
     return (
@@ -86,7 +80,7 @@ function MyArtworksWrapper() {
                 </Link>
             </div>
             <div className="flex flex-wrap gap-5 items-center justify-center lg:justify-start">
-                {sortedArtworks?.length > 0 ? sortedArtworks.map((artwork) => (
+                {sortedArtworks && sortedArtworks.length > 0 ? sortedArtworks.map((artwork) => (
                     <ArtworkCard key={artwork.id} artwork={artwork} />
                 )
                 ) : (

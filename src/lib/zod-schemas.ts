@@ -139,3 +139,11 @@ export const commentSchema = z.object({
         message: "Comment must be at most 1500 characters long."
     }),
 })
+
+export const replySchema = z.object({
+    reply: z.string().min(2, {
+        message: "Reply must be at least 2 characters long."
+    }).max(1500, {
+        message: "Reply must be at most 1500 characters long."
+    }),
+})

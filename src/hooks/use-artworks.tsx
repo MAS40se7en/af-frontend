@@ -27,15 +27,8 @@ export type UserLike = {
     imageUrl: string;
 }
 
-export type Comment = {
-    id: number;
-    text: string;
-    user: User;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
 export type Artwork = {
+    id: number;
     title: string;
     description: string;
     category: Category;
@@ -88,7 +81,7 @@ export const useArtworks = (): ArtworksActions => {
     const { user, isUserLoading } = useAuth();
     const navigate = useNavigate();
 
-    if (!user || isUserLoading ) {
+    if (!user || isUserLoading) {
         return {}
     }
 
@@ -195,12 +188,14 @@ export const useArtworks = (): ArtworksActions => {
 
 
 export const useArtwork = (artWorkId: number): {
-    artwork?: Artwork,
-    artworkError?: any
+    artwork: Artwork,
+    artworkError: any,
+    refetchArtwork: () => void
 } => {
     const {
         data: artwork,
-        error: artworkError
+        error: artworkError,
+        refetch: refetchArtwork
     } = useSuspenseQuery({
         queryKey: ['artwork', artWorkId],
         queryFn: fetchArtwork,
@@ -208,6 +203,7 @@ export const useArtwork = (artWorkId: number): {
 
     return {
         artwork,
-        artworkError
+        artworkError,
+        refetchArtwork
     }
 }

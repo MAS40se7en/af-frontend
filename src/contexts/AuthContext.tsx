@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
 
 type User = {
-    id: string;
+    id: number;
     email: string;
     username: string;
     firstName: string;

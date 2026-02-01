@@ -1,7 +1,7 @@
 import type z from "zod";
 import { isNativeFile, type FileWithPreview } from "@/hooks/use-file-upload";
 import { api } from "@/lib/axios";
-import type { createArtworkSchema } from "@/lib/zod-schemas";
+import type { commentSchema, createArtworkSchema } from "@/lib/zod-schemas";
 import type { QueryFunctionContext } from "@tanstack/react-query";
 
 export const createArtwork = async ({ files, artwork }: { files: FileWithPreview[], artwork: z.infer<typeof createArtworkSchema> }) => {
@@ -85,6 +85,12 @@ export const fetchArtwork = async (
     const [, artworkId] = queryKey;
     
     const response = await api.get('/artworks/' + artworkId)
+
+    return response.data;
+}
+
+export const addComment = async ({artworkId, comment}: {artworkId: number, comment: z.infer<typeof commentSchema>}) => {
+    const response = await api.post('/comments/create/' + artworkId, comment);
 
     return response.data;
 }

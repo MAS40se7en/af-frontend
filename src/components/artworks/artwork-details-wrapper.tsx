@@ -1,36 +1,58 @@
 import { useArtwork } from "@/hooks/use-artworks";
 import { useParams } from "react-router-dom";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import ImagesWrapper from "./components/images-wrapper";
+import ArtworkDetails from "./components/artwork-details";
+import ArtworkComments from "./components/artwork-comments";
+import useScreenSize from "@/hooks/use-screen-size";
+import { Separator } from "../ui/separator";
+import { cn } from "@/lib/utils";
+import { ErrorBoundary } from "react-error-boundary";
+import { Suspense } from "react";
 
-const ArtworkDetailsWrapper = () => {
+interface ArtworkDetailsWrapperProps {
+    userId: number;
+}
+
+const ArtworkDetailsWrapper = ({
+    userId
+}: ArtworkDetailsWrapperProps) => {
     const { artworkId } = useParams();
-    const { artwork, artworkError } = useArtwork(Number(artworkId));
+    const { artwork, artworkError, refetchArtwork } = useArtwork(Number(artworkId));
+    const isUserArtist = userId === Number(artwork?.user.id);
+    const screenSize = useScreenSize();
 
-    if (artworkError) {
+    if (!artwork || artworkError) {
         return <div>{artworkError.message}</div>;
     }
 
-
-
     return (
-        <div className="flex flex-col md:flex-row md:items-start items-center justify-center mt-8 gap-10">
-            <Carousel className="w-4/5 sm:w-3/5 md:w-130">
-                <CarouselContent className="flex items-center">
-                    {artwork?.images?.map((image) => (
-                        <CarouselItem key={image.id}>
-                            <img
-                                src={image.imageUrl}
-                                alt="image"
-                                className="w-full h-120 object-cover" />
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious variant={"secondary"} className="ml-16 size-10" />
-                <CarouselNext variant={"secondary"} className="mr-16 size-10" />
-            </Carousel>
-            <div>
-                <h1>{artwork?.title}</h1>
-                <p>{artwork?.description}</p>
+        <div className="flex flex-col md:flex-row md:items-start items-center justify-center mt-8 gap-5 w-4/5 mx-auto">
+            <div className="flex flex-col gap-10">
+                <ImagesWrapper screenSize={screenSize} artwork={artwork} />
+                {screenSize === "md" || screenSize === "lg" || screenSize === "xl" || screenSize === "2xl" ? (
+                    <>
+                        <Separator className="my-5" />
+                        <ErrorBoundary fallback={<div>error</div>}>
+                            <Suspense fallback={<div>loading...</div>}>
+                                <ArtworkComments refetchArtwork={refetchArtwork} artworkId={artwork.id} />
+                            </Suspense>
+                        </ErrorBoundary>
+                    </>
+                ) : null}
+            </div>
+            <div className={cn(screenSize === "sm" || screenSize === "xs" ? "w-full space-y-5" : "")}>
+                {screenSize === "sm" || screenSize === "xs" ? <Separator className="mb-5" /> : null}
+                <ArtworkDetails artwork={artwork} isUserArtist={isUserArtist} />
+                {screenSize === "sm" || screenSize === "xs" ? (
+                    <>
+                        <Separator className="my-5" />
+                        <ErrorBoundary fallback={<div>error</div>}>
+                            <Suspense fallback={<div>loading...</div>}>
+                                <ArtworkComments refetchArtwork={refetchArtwork} artworkId={artwork.id} />
+                            </Suspense>
+                        </ErrorBoundary>
+                    </>
+                ) : null}
             </div>
         </div>
     )

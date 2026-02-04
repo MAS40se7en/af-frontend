@@ -1,4 +1,4 @@
-import { addReply, getComments, removeComment } from "@/services/commentService"
+import { addReply, getComments, removeComment, removeReply } from "@/services/commentService"
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { addComment } from "@/services/artworkService"
 import { toast } from "sonner"
@@ -33,6 +33,10 @@ export type ReplyActions = {
     postReplyError: any
     postReplySuccess: boolean
     lastRepliedCommentId: number | null;
+    deleteReply: ({ commentId, replyId, artworkId }: { commentId: number, replyId: number, artworkId: number }) => void,
+    isDeletingReply: boolean,
+    isDeletingReplySuccess: boolean,
+    deleteReplyError: any
 }
 
 export type CommentActions = {
@@ -109,6 +113,30 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         }
     });
 
+    const {
+        mutate: deleteReply,
+        isPending: isDeletingReply,
+        isSuccess: isDeletingReplySuccess,
+        error: deleteReplyError
+    } = useMutation({
+        mutationKey: ['delete-reply'],
+        mutationFn: removeReply,
+        onSuccess: ({ artworkId, commentId }) => {
+            toast.success('Reply deleted successfully.');
+            setLastRepliedCommentId(commentId);
+            queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
+            queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
+            queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+        },
+        onError: (error: any) => {
+            console.error('Error deleting reply', error);
+            toast('Error deleting reply.', {
+                description: error.response?.data || error.message,
+                icon: <Ban className="text-destructive mr-4" />,
+            });
+        }
+    })
+
     return [
         {
             deleteComment,
@@ -127,7 +155,12 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
             isPostingReplyError,
             postReplyError,
             postReplySuccess,
-            lastRepliedCommentId
+            lastRepliedCommentId,
+
+            deleteReply,
+            isDeletingReply,
+            isDeletingReplySuccess,
+            deleteReplyError
         }
     ]
 }

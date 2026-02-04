@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import type { FileWithPreview } from "./use-file-upload";
+import type { FileMetadata, FileWithPreview } from "./use-file-upload";
 import { createArtworkSchema } from "@/lib/zod-schemas";
 import type z from "zod";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
@@ -73,6 +73,7 @@ export type ArtworksActions = {
     deleteArtworkError?: any;
     isDeletingArtwork?: boolean;
     isDeletingArtworkError?: boolean;
+    isDeletingArtworkSuccess?: boolean;
     myArtworks?: ArtworkList[];
     myArtworksError?: any;
 }
@@ -126,11 +127,12 @@ export const useArtworks = (): ArtworksActions => {
     } = useMutation({
         mutationKey: ['update-artwork'],
         mutationFn: updateArtworkDetails,
-        onSuccess: () => {
+        onSuccess: ({ artworkId }) => {
             console.log('Artwork updated successfully');
             toast.success('Artwork updated successfully.');
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+            navigate(`/artworks/${artworkId}`);
         },
         onError: (error: any) => {
             console.error('Error updating artwork', error);
@@ -145,7 +147,8 @@ export const useArtworks = (): ArtworksActions => {
         mutate: deleteArtwork,
         isPending: isDeletingArtwork,
         isError: isDeletingArtworkError,
-        error: deleteArtworkError
+        error: deleteArtworkError,
+        isSuccess: isDeletingArtworkSuccess
     } = useMutation({
         mutationKey: ['add-artwork'],
         mutationFn: removeArtwork,
@@ -154,6 +157,7 @@ export const useArtworks = (): ArtworksActions => {
             toast.success('Artwork deleted successfully.');
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+            navigate('/account/my-artworks');
         },
         onError: (error: any) => {
             console.error('Error deleting artwork', error);
@@ -181,6 +185,7 @@ export const useArtworks = (): ArtworksActions => {
         deleteArtworkError,
         isDeletingArtwork,
         isDeletingArtworkError,
+        isDeletingArtworkSuccess,
         myArtworks,
         myArtworksError,
     }
@@ -190,7 +195,8 @@ export const useArtworks = (): ArtworksActions => {
 export const useArtwork = (artWorkId: number): {
     artwork: Artwork,
     artworkError: any,
-    refetchArtwork: () => void
+    refetchArtwork: () => void,
+    artworkImagesToFileMetadeta: (images: listImageInfo[]) => FileMetadata[]
 } => {
     const {
         data: artwork,
@@ -201,9 +207,19 @@ export const useArtwork = (artWorkId: number): {
         queryFn: fetchArtwork,
     });
 
+    const artworkImagesToFileMetadeta = (images: listImageInfo[]): FileMetadata[] => images.map(img => ({
+        id: img.id.toString(),
+        name: `image-${img.id}`,
+        size: 0,
+        type: 'image/*',
+        url: img.imageUrl,
+        order: img.order
+    }))
+
     return {
         artwork,
         artworkError,
-        refetchArtwork
+        refetchArtwork,
+        artworkImagesToFileMetadeta
     }
 }

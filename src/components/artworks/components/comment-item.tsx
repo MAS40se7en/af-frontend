@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import ReplyItem from "./reply-item"
 import ReplyToComment from "./reply-to-comment"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 
 interface CommentProps {
     comment: Comment;
@@ -16,10 +17,11 @@ interface CommentProps {
     artworkId: number;
     userId: number;
     isUserArtist: boolean;
+    deleteComment: (commentId: number) => void
 }
 
 const CommentItem = (
-    { comment, replyActions, artworkId, userId, isUserArtist }: CommentProps
+    { comment, replyActions, artworkId, userId, isUserArtist, deleteComment }: CommentProps
 ) => {
     const [replying, setReplying] = useState(false);
     const [showReplies, setShowReplies] = useState(false);
@@ -114,7 +116,13 @@ const CommentItem = (
                             </DropdownMenuItem>
                             {(comment.user.id === userId || isUserArtist) && (
                                 <DropdownMenuItem className="px-0 py-1 transition-all">
-                                    <Button variant={"ghost"} className="w-full text-start">Remove</Button>
+                                    <Button
+                                        variant={"ghost"}
+                                        className="w-full text-start"
+                                        onClick={() => deleteComment(comment.id)}
+                                    >
+                                        Remove
+                                    </Button>
                                 </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>
@@ -138,10 +146,15 @@ const CommentItem = (
                         postReplySuccess={replyActions.postReplySuccess}
                     />}
                     {sortedReplies && sortedReplies.length > 0 && showReplies && (
-                        <div>
-                            <ul>
-                                {sortedReplies.map((reply) => (
-                                    <ReplyItem key={reply.id} reply={reply} />
+                        <div className="flex justify-end pb-2">
+                            <ul className="flex flex-col border max-w-5/6 min-w-5/6 rounded-lg px-0">
+                                {sortedReplies.map((reply, index) => (
+                                    <>
+                                        <ReplyItem key={reply.id} commentId={comment.id} artworkId={artworkId} userId={userId} isUserArtist={isUserArtist} reply={reply} deleteReply={replyActions.deleteReply} />
+                                        {index !== sortedReplies.length - 1 && (
+                                            <Separator />
+                                        )}
+                                    </>
                                 ))}
                             </ul>
                         </div>

@@ -87,7 +87,7 @@ function UploadArtworkImages({
         <div className="mt-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h4 className="text-sm font-medium">
-              Gallery ({fileState.files.length}/{maxFiles})
+              Gallery ({fileState.files.length}/{fileState.files.length > 0 ? maxFiles + fileState.files.length : maxFiles})
             </h4>
             <div className="text-xs text-muted-foreground">
               Total: {formatBytes(fileState.files.reduce((acc, file) => acc + file.file.size, 0))}
@@ -134,7 +134,7 @@ function UploadArtworkImages({
                 </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center rounded-lg border bg-muted">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                  <ImageIcon className="h-8 w-8 text-muted-foreground justify-center" />
                 </div>
               )}
               {/* Overlay */}
@@ -145,13 +145,13 @@ function UploadArtworkImages({
                     onClick={() => setSelectedImage(fileItem.preview!)}
                     variant="secondary"
                     size="icon"
-                    className="size-7"
+                    className="size-7 justify-center"
                   >
                     <ZoomInIcon className="opacity-100/80" />
                   </Button>
                 )}
                 {/* Remove Button */}
-                <Button onClick={() => fileActions.removeFile(fileItem.id)} variant="secondary" size="icon" className="size-7">
+                <Button onClick={() => fileActions.removeFile(fileItem.id)} variant="secondary" size="icon" className="size-7 justify-center">
                   <XIcon className="opacity-100/80" />
                 </Button>
               </div>

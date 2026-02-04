@@ -29,12 +29,7 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
     });
 
     const [
-        {
-            postComment,
-            postCommentSuccess,
-            postCommentError,
-            isPostingComment,
-        },
+        commentActions,
         replyActions
     ] = useCommentsActions();
 
@@ -42,14 +37,14 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
     const [isAddingComment, setIsAddingComment] = useState(false);
 
     useEffect(() => {
-        if (postCommentSuccess) {
+        if (commentActions.postCommentSuccess) {
             refetchComments();
             refetchArtwork();
             setIsAddingComment(false);
         }
     }, [
-        postComment,
-        postCommentSuccess,
+        commentActions.postComment,
+        commentActions.postCommentSuccess,
         refetchComments
     ]);
 
@@ -63,6 +58,28 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
         replyActions.postReplySuccess,
         refetchComments
     ]);
+
+    useEffect(() => {
+        if (commentActions.isDeletingCommentSuccess) {
+            refetchComments();
+            refetchArtwork();
+        }
+    }, [
+        commentActions.deleteComment,
+        commentActions.isDeletingCommentSuccess,
+        refetchComments
+    ])
+
+    useEffect(() => {
+        if (replyActions.isDeletingReplySuccess) {
+            refetchComments();
+            refetchArtwork();
+        }
+    }, [
+        replyActions.deleteReply,
+        replyActions.isDeletingReplySuccess,
+        refetchComments
+    ])
 
     const sortedComments = sortItemsByDate({ items: comments, sortOptions: sort });
 
@@ -110,10 +127,10 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
                             <DialogTitle>Add a new Comment</DialogTitle>
                         </DialogHeader>
                         <AddComment
-                            postComment={postComment}
-                            postCommentSuccess={postCommentSuccess}
-                            postCommentError={postCommentError}
-                            isPostingComment={isPostingComment}
+                            postComment={commentActions.postComment}
+                            postCommentSuccess={commentActions.postCommentSuccess}
+                            postCommentError={commentActions.postCommentError}
+                            isPostingComment={commentActions.isPostingComment}
                             artworkId={artworkId}
                         />
                     </DialogContent>
@@ -125,6 +142,7 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
                     {sortedComments && sortedComments.map((comment, index) => (
                         <li key={comment.id}>
                             <CommentItem
+                                deleteComment={commentActions.deleteComment}
                                 isUserArtist={isUserArtist}
                                 userId={userId}
                                 artworkId={artworkId}

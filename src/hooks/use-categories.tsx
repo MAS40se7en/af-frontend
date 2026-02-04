@@ -1,7 +1,8 @@
 import { getCategories } from "@/services/categoryService";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export type Category = {
+    id: number;
     name: string;
     code: string;
     artWorks: number;
@@ -29,7 +30,7 @@ function UseCategories(): categoryActions {
         data: categories,
         isPending,
         error
-    } = useQuery({
+    } = useSuspenseQuery({
         queryKey: ['fetch-categories'],
         queryFn: getCategories,
     });

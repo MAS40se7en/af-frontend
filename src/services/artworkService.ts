@@ -68,7 +68,9 @@ export const updateArtworkDetails = async ({ files, artwork }: { files: FileWith
 
 export const removeArtwork = async (artworkId: number) => {
 
-    const response = await api.delete('/artworks/' + artworkId);
+    const response = await api.delete(
+        '/artworks/' + artworkId
+    );
 
     return response.data;
 }

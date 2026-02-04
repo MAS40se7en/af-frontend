@@ -24,3 +24,9 @@ export const addReply = async ({ commentId, reply, artworkId }: { commentId: num
 
     return response.data;
 }
+
+export const removeReply = async ({ commentId, replyId, artworkId }: { commentId: number, replyId: number, artworkId: number }) => {
+    const response = await api.delete('/comment-replies/' + replyId + '/' + commentId + '/' + artworkId);
+
+    return response.data;
+}

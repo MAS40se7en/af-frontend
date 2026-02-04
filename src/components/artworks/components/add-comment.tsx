@@ -41,6 +41,7 @@ const AddComment = ({
 
     postComment({artworkId, comment: values});
   }
+  
   return (
     <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="mb-5">

@@ -1,6 +1,6 @@
 import { useMutation, type UseMutateFunction } from '@tanstack/react-query';
 import type React from 'react';
-import { useCallback, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
 import { updateProfilePhoto } from '@/services/imagesService';
 import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
@@ -73,7 +73,10 @@ export function isNativeFile(
     return value instanceof File;
 }
 
-export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions, UpdateProfileAction] => {
+export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions, UpdateProfileAction, {
+    existingImages: FileWithPreview[],
+    newImages: FileWithPreview[],
+}] => {
     const { refetchUser } = useAuth();
 
     const {
@@ -96,6 +99,40 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         isDragging: false,
         errors: [],
     });
+
+    const existingImages = useMemo(
+        () => state.files.filter(f => !(f.file instanceof File)),
+        [state.files]
+    );
+
+    const newImages = useMemo(
+        () => state.files.filter(f => f.file instanceof File),
+        [state.files]
+    )
+
+    useEffect(() => {
+        if (!initialFiles.length) return;
+
+        setState(prev => {
+            if (prev.files.length > 0) return prev;
+
+            const files = normalizeOrder(
+                initialFiles.map(file => ({
+                    file,
+                    id: file.id,
+                    preview: file.url,
+                    order: file.order
+                }))
+            );
+
+            onFilesChange?.(files);
+
+            return {
+                ...prev,
+                files
+            }
+        })
+    }, [initialFiles])
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -447,6 +484,10 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
             isUpdatingAvatarError,
             updateAvatarError,
             isUpdatingAvatarSuccess
+        },
+        {
+            existingImages,
+            newImages
         }
     ];
 };

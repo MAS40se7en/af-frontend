@@ -26,8 +26,8 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious variant={"secondary"} className="ml-22 size-10" />
-          <CarouselNext variant={"secondary"} className="mr-22 size-10" />
+          <CarouselPrevious variant={"secondary"} className="ml-22 size-10 justify-center" />
+          <CarouselNext variant={"secondary"} className="mr-22 size-10 justify-center" />
         </Carousel>
       </CardHeader>
       <CardFooter className="flex flex-col items-start px-3 gap-2 w-full">

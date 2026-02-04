@@ -96,3 +96,15 @@ export const addComment = async ({artworkId, comment}: {artworkId: number, comme
 
     return response.data;
 }
+
+export const addLike = async (artworkId: number) => {
+    const response = await api.post('/likes/like/' + artworkId);
+
+    return response.data;
+}
+
+export const removeLike = async (artworkId: number) => {
+    const response = await api.delete('/likes/unlike/' + artworkId);
+
+    return response.data;
+}

@@ -13,7 +13,7 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
   const [linkHover, setLinkHover] = useState(false);
 
   return (
-    <Card className="p-0 pb-3 overflow-hidden items-center justify-center w-65 hover:cursor-pointer gap-3 hover:scale-105 transition-all hover:outline-primary-foreground hover:outline-3">
+    <Card className="p-0 pb-3 overflow-hidden items-center justify-center w-65 hover:cursor-pointer gap-3 hover:scale-105 transition-all hover:outline-primary-foreground hover:outline-3 rounded-xl">
       <CardHeader className="p-0 w-full flex flex-col justify-center items-center">
         <Carousel className="relative h-60 w-80 overflow-hidden px-2">
           <CarouselContent className="flex h-full">

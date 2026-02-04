@@ -79,7 +79,7 @@ function MyArtworksWrapper() {
                     Create
                 </Link>
             </div>
-            <div className="flex flex-wrap gap-5 items-center justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-2 items-center justify-center lg:justify-start">
                 {sortedArtworks && sortedArtworks.length > 0 ? sortedArtworks.map((artwork) => (
                     <ArtworkCard key={artwork.id} artwork={artwork} />
                 )

@@ -28,7 +28,11 @@ const ArtworkDetailsWrapper = ({
     return (
         <div className="flex flex-col md:flex-row md:items-start items-center justify-center mt-8 gap-5 w-4/5 mx-auto">
             <div className="flex flex-col gap-10">
-                <ImagesWrapper screenSize={screenSize} artwork={artwork} />
+                <ImagesWrapper 
+                screenSize={screenSize} 
+                artwork={artwork} 
+                userId={userId}
+                />
                 {screenSize === "md" || screenSize === "lg" || screenSize === "xl" || screenSize === "2xl" ? (
                     <>
                         <Separator className="my-2" />

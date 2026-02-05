@@ -14,6 +14,8 @@ const ArtworkLikes = ({ artwork, userId }: props) => {
     const userLikedArtwork = artwork.likedBy.some((u) => u.id == userId);
     const [likeState, setLikeState] = useState<boolean>(userLikedArtwork);
 
+    console.log(artwork, userLikedArtwork);
+
     const {
         likeArtwork,
         isAddingLikeSuccess,
@@ -27,14 +29,14 @@ const ArtworkLikes = ({ artwork, userId }: props) => {
 
     useEffect(() => {
         if (isAddingLikeSuccess) {
-            refetchArtwork();
             setLikeState(true);
+            refetchArtwork();
         }
     }, [likeArtwork, isAddingLikeSuccess]);
     
     useEffect(() => {
         if (isRemovingLikeSuccess) {
-            setLikeState(true);
+            setLikeState(false);
             refetchArtwork();
         }
     }, [unlikeArtwork, isRemovingLikeSuccess]);

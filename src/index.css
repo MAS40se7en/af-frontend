@@ -68,9 +68,6 @@ h1 {
 }
 
 button {
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
@@ -180,4 +177,28 @@ button {
 .shadow-xl {
   --tw-shadow: 0px 0px 100px 100px rgba(0, 0, 0, 0.411);
   --tw-shadow-colored: 0px -40px 100px 12px var(--tw-shadow-color);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-foreground);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary-foreground);
 }

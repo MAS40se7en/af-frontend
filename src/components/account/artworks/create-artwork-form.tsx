@@ -5,7 +5,7 @@ import { ACCEPTED_TYPES, createArtworkFormSchema, createArtworkSchema, MAX_FILE_
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useArtworks } from "@/hooks/use-artworks"
 import { useFileUpload } from "@/hooks/use-file-upload"
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from "@/components/ui/input-group"
 import { Button } from "@/components/ui/button"

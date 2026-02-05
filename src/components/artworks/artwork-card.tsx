@@ -13,7 +13,7 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
   const [linkHover, setLinkHover] = useState(false);
 
   return (
-    <Card className="p-0 pb-3 overflow-hidden items-center justify-center w-65 hover:cursor-pointer gap-3 hover:scale-105 transition-all hover:outline-primary-foreground hover:outline-3">
+    <Card className="p-0 pb-3 overflow-hidden items-center justify-center w-65 hover:cursor-pointer gap-3 hover:scale-105 transition-all hover:outline-primary-foreground hover:outline-3 rounded-xl">
       <CardHeader className="p-0 w-full flex flex-col justify-center items-center">
         <Carousel className="relative h-60 w-80 overflow-hidden px-2">
           <CarouselContent className="flex h-full">
@@ -26,8 +26,8 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious variant={"secondary"} className="ml-22 size-10" />
-          <CarouselNext variant={"secondary"} className="mr-22 size-10" />
+          <CarouselPrevious variant={"secondary"} className="ml-22 size-10 justify-center" />
+          <CarouselNext variant={"secondary"} className="mr-22 size-10 justify-center" />
         </Carousel>
       </CardHeader>
       <CardFooter className="flex flex-col items-start px-3 gap-2 w-full">
@@ -54,11 +54,11 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
           <div className="flex gap-2 items-center">
             <div className="flex gap-1 items-center">
               <Heart className="size-4 text-primary-foreground fill-primary-foreground" />
-              <span className="text-xs">{"likes"}</span>
+              <span className="text-xs">{artwork.likeCount}</span>
             </div>
             <div className="flex gap-1 items-center">
               <MessageSquare className="size-4 text-primary-foreground fill-primary-foreground" />
-              <span className="text-xs">{"comms"}</span>
+              <span className="text-xs">{artwork.commentCount}</span>
             </div>
           </div>
           <Badge>{new Date(artwork.createdAt).toDateString()}</Badge>

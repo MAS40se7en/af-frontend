@@ -14,6 +14,7 @@ import MyPosts from './pages/account/MyPosts'
 import ManageInfo from './pages/account/ManageInfo'
 import CreateArtwork from './pages/artworks/Create'
 import ShowArtwork from './pages/artworks/Show'
+import EditArtwork from './pages/artworks/Edit'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path='/artworks' element={<Artworks />} />
           <Route path='/create-artwork' element={<CreateArtwork />} />
           <Route path='/artworks/:artworkId/details' element={<ShowArtwork />} />
+          <Route path='/artworks/:artworkId/edit' element={<EditArtwork />} />
 
           {/** Account related routes */}
           <Route path='/account' element={<AccountLayout />}>

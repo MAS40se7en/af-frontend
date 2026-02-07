@@ -63,7 +63,7 @@ function CreateArtworkForm() {
 
       if (fileErrors?.length) {
         form.setError("root.files", {
-          type: "manuel",
+          type: "manual",
           message: fileErrors[0]
         })
       }

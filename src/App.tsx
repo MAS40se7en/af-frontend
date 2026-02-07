@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Categories from './pages/Categories'
+import Categories from './pages/categories/Categories'
 import Artists from './pages/Artists'
 import Artworks from './pages/Artworks'
 import PublicOnlyRoute from './routes/public-routes'
@@ -15,6 +15,7 @@ import ManageInfo from './pages/account/ManageInfo'
 import CreateArtwork from './pages/artworks/Create'
 import ShowArtwork from './pages/artworks/Show'
 import EditArtwork from './pages/artworks/Edit'
+import ShowCategory from './pages/categories/Show'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
 
           {/** Categories created routes */}
           <Route path='/categories' element={<Categories />} />
+          <Route path='/categories/:categoryId' element={<ShowCategory />} />
 
           {/** Artists related routes */}
           <Route path='/artists' element={<Artists />} />

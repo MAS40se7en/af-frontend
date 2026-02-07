@@ -11,11 +11,13 @@ type User = {
     firstName: string;
     lastName: string;
     fullName: string;
+    roleName: string;
     imageUrl: string;
 };
 
 interface AuthContextType {
   user: User | null;
+  isAdmin: boolean;
   isUserLoading: boolean;
   isUserError: boolean;
   userErrorData: any;
@@ -37,6 +39,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   
   const {
     data: userData,
@@ -69,6 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setUser(userData || null);
+    if (userData) setIsAdmin(userData.roleName === 'ROLE_ADMIN' || userData.roleName === 'ROLE_TESTER');
   }, [userData]);
 
   const {
@@ -139,6 +143,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value = {
     user,
+    isAdmin,
     isUserLoading,
     isUserError,
     userErrorData,

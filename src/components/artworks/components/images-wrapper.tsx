@@ -56,7 +56,7 @@ const ImagesWrapper = ({ artwork, userId }: props) => {
                     <div className="flex gap-2 items-center">
                         <ArtworkLikes userId={userId} artwork={artwork} />
                         <div className="flex gap-1 items-center">
-                            <MessageSquare className="size-6 fill-white" />
+                            <MessageSquare className="size-6 dark:fill-white fill-black" />
                             <span className="text-xs">{artwork.commentCount}</span>
                         </div>
                     </div>

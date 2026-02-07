@@ -1,6 +1,26 @@
+import { isNativeFile, type FileWithPreview } from "@/hooks/use-file-upload";
 import { api } from "@/lib/axios"
+import type { createCategorySchema } from "@/lib/zod-schemas";
+import z from "zod";
 
 export const getCategories = async () => {
     const response = await api.get('/categories')
     return await response.data;
+}
+
+export const createCategory = async ({ file, category }: { file: FileWithPreview, category: z.infer<typeof createCategorySchema> }) => {
+    const formData = new FormData();
+
+    formData.append(
+        "category",
+        new Blob([JSON.stringify(category)], { type: "application/json" })
+    );
+
+    if (isNativeFile(file.file)) {
+        formData.append('image', file.file);
+    }
+
+    const response = await api.post('/categories/create-category', formData);
+
+    return response.data;
 }

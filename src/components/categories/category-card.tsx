@@ -24,9 +24,16 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
               group-hover:brightness-70
             " />
         <div className="absolute bottom-3 left-3 right-5 group-hover:right-3 transition-all duration-300 flex justify-between items-center">
-          <p className="text-xl font-semibold">
-            {category.name}
-          </p>
+          <div>
+            <p className="text-xl font-semibold">
+              {category.name}
+            </p>
+            {isHoveredId === category.id && (
+              <p className="opacity-30 transition-all duration-300 group-hover:opacity-100">
+                {category.artWorkCount} artworks
+              </p>
+            )}
+          </div>
           {isHoveredId === category.id && <ChevronRight className=
             "size-5 opacity-30 transition-all duration-300 group-hover:opacity-100" />}
         </div>

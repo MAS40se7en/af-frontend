@@ -1,6 +1,7 @@
 import { isNativeFile, type FileWithPreview } from "@/hooks/use-file-upload";
 import { api } from "@/lib/axios"
 import type { createCategorySchema } from "@/lib/zod-schemas";
+import type { QueryFunctionContext } from "@tanstack/react-query";
 import z from "zod";
 
 export const getCategories = async () => {
@@ -22,5 +23,15 @@ export const createCategory = async ({ file, category }: { file: FileWithPreview
 
     const response = await api.post('/categories/create-category', formData);
 
+    return response.data;
+}
+
+export const getCategory = async (
+    { queryKey }: QueryFunctionContext<[string, number]>
+) => {
+    const [, categoryId] = queryKey;
+
+    const response = await api.get('/categories/' + categoryId);
+    
     return response.data;
 }

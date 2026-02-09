@@ -2,10 +2,11 @@ import useCategories from "@/hooks/use-categories"
 import CategoryCard from "./category-card";
 import { useAuth } from "@/contexts/AuthContext";
 import CreateCategoryDialog from "./components/create-category";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const CategoriesListWrapper = () => {
   const { isAdmin } = useAuth();
+  const [open, setOpen] = useState<boolean>(false);
 
   const {
     categories,
@@ -16,10 +17,10 @@ const CategoriesListWrapper = () => {
     isAddingCategorySuccess
   } = useCategories();
 
-  console.log(categories);
 
   useEffect(() => {
     if (isAddingCategorySuccess) {
+      setOpen(false);
       refetchCategories();
     }
   }, [isAddingCategorySuccess])
@@ -32,7 +33,13 @@ const CategoriesListWrapper = () => {
           <p className="text-sm text-muted-foreground">Artworks are grouped in the categories they are assigned to.</p>
         </div>
         {isAdmin && (
-          <CreateCategoryDialog addCategory={addCategory} addCategoryError={addCategoryError} isAddingCategory={isAddingCategory} />
+          <CreateCategoryDialog 
+          open={open}
+          setOpen={setOpen}
+          addCategory={addCategory} 
+          addCategoryError={addCategoryError} 
+          isAddingCategory={isAddingCategory}
+          isAddingCategorySuccess={isAddingCategorySuccess} />
         )}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">

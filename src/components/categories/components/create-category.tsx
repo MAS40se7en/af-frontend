@@ -9,11 +9,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod"
 import UploadCategoryImage from "./upload-category-image"
+import { useEffect } from "react"
 
 interface CreateCategoryDialogProps {
     addCategory: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
     isAddingCategory: boolean;
     addCategoryError: any;
+    open?: boolean;
+    setOpen?: (open: boolean) => void;
+    isAddingCategorySuccess: boolean;
 }
 
 const maxSize = MAX_FILE_SIZE;
@@ -21,7 +25,10 @@ const maxSize = MAX_FILE_SIZE;
 const CreateCategoryDialog = ({
     addCategory,
     isAddingCategory,
-    addCategoryError
+    addCategoryError,
+    open,
+    setOpen,
+    isAddingCategorySuccess
 }: CreateCategoryDialogProps) => {
 
     const [
@@ -42,6 +49,12 @@ const CreateCategoryDialog = ({
             description: "",
         }
     });
+
+    useEffect(() => {
+        if (isAddingCategorySuccess) {
+            form.reset();
+        }
+    }, [addCategory, isAddingCategorySuccess])
 
     const onSubmit = () => {
         const file = fileState.files[0];
@@ -73,7 +86,7 @@ const CreateCategoryDialog = ({
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant={"secondary"}>Add Category</Button>
             </DialogTrigger>

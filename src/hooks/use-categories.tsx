@@ -1,9 +1,12 @@
 import type { createCategorySchema } from "@/lib/zod-schemas";
-import { createCategory, getCategories, getCategory } from "@/services/categoryService";
+import { createCategory, deleteCategory, getCategories, getCategory } from "@/services/categoryService";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import type { FileWithPreview } from "./use-file-upload";
 import type z from "zod";
 import type { ArtworkList } from "./use-artworks";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { queryClient } from "@/lib/tanstack";
 
 export type Category = {
     id: number;
@@ -26,10 +29,6 @@ export type CategoryList = {
     createdAt: Date
 }
 
-export type categoryArtworks = {
-    
-}
-
 export type categoryActions = {
     categories: CategoryList[],
     isPending: boolean,
@@ -39,10 +38,16 @@ export type categoryActions = {
     isAddingCategory: boolean,
     isAddingCategoryError: boolean,
     addCategoryError: any,
-    isAddingCategorySuccess: boolean
+    isAddingCategorySuccess: boolean,
+    destroyCategory: (id: number) => void,
+    isDeletingCategory: boolean,
+    isDeletingCategoryError: boolean,
+    deleteCategoryError: any,
+    isDeletingCategorySuccess: boolean
 }
 
 function useCategories(): categoryActions {
+    const navigate = useNavigate();
 
     const {
         data: categories,
@@ -63,6 +68,24 @@ function useCategories(): categoryActions {
     } = useMutation({
         mutationKey: ['add-category'],
         mutationFn: createCategory
+    });
+
+    const {
+        mutate: destroyCategory,
+        isPending: isDeletingCategory,
+        isError: isDeletingCategoryError,
+        error: deleteCategoryError,
+        isSuccess: isDeletingCategorySuccess
+    } = useMutation({
+        mutationKey: ['delete-category'],
+        mutationFn: deleteCategory,
+        onSuccess: () => {
+            console.log('Category deleted successfully');
+            toast.success('Category deleted successfully.');
+            queryClient.invalidateQueries({ queryKey: ['fetch-categories'] });
+
+            navigate('/categories');
+        }
     })
 
 
@@ -75,7 +98,12 @@ function useCategories(): categoryActions {
       isAddingCategory,
       isAddingCategoryError,
       addCategoryError,
-      isAddingCategorySuccess
+      isAddingCategorySuccess,
+      destroyCategory,
+      isDeletingCategory,
+      isDeletingCategoryError,
+      deleteCategoryError,
+      isDeletingCategorySuccess
   }
 }
 

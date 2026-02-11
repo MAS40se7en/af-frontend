@@ -48,7 +48,9 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
               linkHover && "ml-0 opacity-100"
             )} />}
           </Link>
-          <Badge variant={"secondary"}>{artwork.category?.name || ""}</Badge>
+          {artwork.category && (
+            <Badge variant={"secondary"}>{artwork.category?.name}</Badge>
+          )}
         </div>
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-2 items-center">

@@ -25,11 +25,11 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
             " />
         <div className="absolute bottom-3 left-3 right-5 group-hover:right-3 transition-all duration-300 flex justify-between items-center">
           <div>
-            <p className="text-xl font-semibold">
+            <p className="text-xl font-semibold text-white">
               {category.name}
             </p>
             {isHoveredId === category.id && (
-              <p className="opacity-30 transition-all duration-300 group-hover:opacity-100">
+              <p className="opacity-30 transition-all duration-300 group-hover:opacity-100 text-white">
                 {category.artWorkCount} artworks
               </p>
             )}

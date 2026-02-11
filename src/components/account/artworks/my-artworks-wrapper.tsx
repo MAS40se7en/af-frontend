@@ -79,13 +79,14 @@ function MyArtworksWrapper() {
                     Create
                 </Link>
             </div>
-            <div className="flex flex-wrap gap-2 items-center justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-2 items-center justify-center lg:justify-start w-full">
                 {sortedArtworks && sortedArtworks.length > 0 ? sortedArtworks.map((artwork) => (
                     <ArtworkCard key={artwork.id} artwork={artwork} />
                 )
                 ) : (
                     <NoElements
                         url="/create-artwork"
+                        state={null}
                         text="You have no art works created! You can add a new one down here!"
                         className=""
                         objectName="Art works"

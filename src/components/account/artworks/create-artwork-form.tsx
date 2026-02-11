@@ -11,6 +11,7 @@ import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from 
 import { Button } from "@/components/ui/button"
 import UseCategories from "@/hooks/use-categories"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useLocation } from "react-router-dom"
 
 const maxSize = MAX_FILE_SIZE;
 
@@ -19,6 +20,8 @@ const maxFiles = 5
 function CreateArtworkForm() {
   const { addArtwork } = useArtworks();
   const { categories, isPending } = UseCategories();
+  const location = useLocation();
+  const { from } = location.state || {};
 
   const [
     fileState,
@@ -35,7 +38,7 @@ function CreateArtworkForm() {
     defaultValues: {
       title: "",
       description: "",
-      categoryId: undefined
+      categoryId: from || undefined
     }
   });
 

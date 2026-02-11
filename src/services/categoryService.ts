@@ -35,3 +35,9 @@ export const getCategory = async (
     
     return response.data;
 }
+
+export const deleteCategory = async (categoryId: number) => {
+    const response = await api.delete('/categories/' + categoryId);
+
+    return response.data;
+}

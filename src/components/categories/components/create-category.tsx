@@ -9,15 +9,23 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import z from "zod"
 import UploadCategoryImage from "./upload-category-image"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import type { Category } from "@/hooks/use-categories"
+import { SquarePen } from "lucide-react"
 
 interface CreateCategoryDialogProps {
-    addCategory: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
-    isAddingCategory: boolean;
-    addCategoryError: any;
+    addCategory?: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
+    isAddingCategory?: boolean;
+    addCategoryError?: any;
     open?: boolean;
     setOpen?: (open: boolean) => void;
-    isAddingCategorySuccess: boolean;
+    isAddingCategorySuccess?: boolean;
+    category?: Category;
+    updateCategory?: ({ id, file, category, removeImage }: { id: number, category: z.infer<typeof createCategorySchema>, file: FileWithPreview, removeImage?: boolean }) => void;
+    isUpdatingCategory?: boolean;
+    updateCategoryError?: any;
+    isUpdatingCategorySuccess?: boolean;
+    isEditing?: boolean;
 }
 
 const maxSize = MAX_FILE_SIZE;
@@ -28,7 +36,12 @@ const CreateCategoryDialog = ({
     addCategoryError,
     open,
     setOpen,
-    isAddingCategorySuccess
+    isAddingCategorySuccess,
+    category,
+    updateCategory,
+    isUpdatingCategory,
+    updateCategoryError,
+    isEditing
 }: CreateCategoryDialogProps) => {
 
     const [
@@ -41,12 +54,18 @@ const CreateCategoryDialog = ({
         accept: "image/*"
     });
 
+    const [removeExistingImage, setRemoveExistingImage] = useState(false);
+
+    const previewUrl =
+        fileState.files[0]?.preview ??
+        (removeExistingImage ? null : category?.imageUrl ?? null);
+
     const form = useForm<z.infer<typeof createCategorySchema>>({
         resolver: zodResolver(createCategorySchema),
         defaultValues: {
-            name: "",
-            code: "",
-            description: "",
+            name: isEditing ? category?.name ?? "" : "",
+            code: isEditing ? category?.code ?? "" : "",
+            description: isEditing ? category?.description ?? "" : "",
         }
     });
 
@@ -61,7 +80,7 @@ const CreateCategoryDialog = ({
 
         const result = createCategoryFormSchema.safeParse({
             category: form.getValues(),
-            file: file
+            file: file ? file : null
         })
 
         if (!result.success) {
@@ -70,29 +89,40 @@ const CreateCategoryDialog = ({
             const fileErrors = result.error.flatten().fieldErrors.file;
 
             if (fileErrors?.length) {
-                form.setError("root.files", {
+                form.setError("root.file", {
                     type: "manual",
                     message: fileErrors[0]
                 })
             }
             return;
         };
-        if (!addCategory) return;
 
-        addCategory({
-            file: result.data.file,
-            category: result.data.category
-        })
+        if (addCategory) {
+            addCategory({
+                file: result.data.file,
+                category: result.data.category
+            })
+        } else if (updateCategory && category && isEditing) {
+            updateCategory({
+                id: category.id,
+                file: result.data.file,
+                category: result.data.category,
+                removeImage: removeExistingImage
+            })
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={"secondary"}>Add Category</Button>
+                <Button variant={"secondary"}>
+                    <SquarePen className="size-4 mr-2" />
+                    {isEditing ? "Edit Category" : "Create Category"}
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create Category</DialogTitle>
+                    <DialogTitle>{isEditing ? "Edit Category" : "Create Category"}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
                     <Controller
@@ -166,26 +196,31 @@ const CreateCategoryDialog = ({
                             </Field>
                         )}
                     />
+                    <UploadCategoryImage
+                        file={fileState.files[0] ?? null}
+                        previewUrl={previewUrl}
+                        errors={fileState.errors}
+                        onRemoveFile={() => fileActions.removeFile(fileState.files[0]?.id)}
+                        onRemoveExistingImage={() => setRemoveExistingImage(true)}
+                        getInputProps={fileActions.getInputProps}
+                        handleDragEnter={fileActions.handleDragEnter}
+                        handleDragLeave={fileActions.handleDragLeave}
+                        handleDragOver={fileActions.handleDragOver}
+                        handleDrop={fileActions.handleDrop}
+                        openFileDialog={fileActions.openFileDialog}
+                        isDragging={fileState.isDragging}
+                        className="mt-4 mb-2"
+                        rhfFileError={form.formState.errors.root?.file?.message}
+                    />
+                    <DialogFooter>
+                        <DialogClose>Close</DialogClose>
+                        <Button type="submit" disabled={isAddingCategory || isUpdatingCategory}>
+                            {isEditing ? "Update Category" : "Add Category"}
+                        </Button>
+                        {addCategoryError && !isEditing && <p className="text-destructive">{addCategoryError.message}</p>}
+                        {updateCategoryError && isEditing && <p className="text-destructive">{updateCategoryError.message}</p>}
+                    </DialogFooter>
                 </form>
-                <UploadCategoryImage
-                    file={fileState.files[0] ?? null}
-                    errors={fileState.errors}
-                    onRemoveFile={() => fileActions.removeFile(fileState.files[0]?.id)}
-                    getInputProps={fileActions.getInputProps}
-                    handleDragEnter={fileActions.handleDragEnter}
-                    handleDragLeave={fileActions.handleDragLeave}
-                    handleDragOver={fileActions.handleDragOver}
-                    handleDrop={fileActions.handleDrop}
-                    openFileDialog={fileActions.openFileDialog}
-                    isDragging={fileState.isDragging}
-                    className="mt-4 mb-2" />
-                <DialogFooter>
-                    <DialogClose>Close</DialogClose>
-                    <Button disabled={isAddingCategory} onClick={onSubmit}>
-                        Add Category
-                    </Button>
-                    {addCategoryError && <p className="text-destructive">{addCategoryError.message}</p>}
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

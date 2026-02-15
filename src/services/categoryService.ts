@@ -26,13 +26,35 @@ export const createCategory = async ({ file, category }: { file: FileWithPreview
     return response.data;
 }
 
+export const editCategory = async ({ id, file, category, removeImage }: { id: number, file?: FileWithPreview, category: z.infer<typeof createCategorySchema>, removeImage?: boolean }) => {
+    const formData = new FormData();
+    console.log("editCategory called with: ", { id, file, category, removeImage });
+    formData.append(
+        "category",
+        new Blob([JSON.stringify(category)], { type: "application/json" })
+    );
+
+    formData.append(
+            'removeImage', 
+            new Blob([JSON.stringify(removeImage ? 'true' : 'false')], { type: "application/json" })
+        );
+
+    if (file && isNativeFile(file.file)) {
+        formData.append('image', file.file);
+    }
+
+    const response = await api.put('/categories/edit-category/' + id, formData);
+
+    return response.data;
+}
+
 export const getCategory = async (
     { queryKey }: QueryFunctionContext<[string, number]>
 ) => {
     const [, categoryId] = queryKey;
 
     const response = await api.get('/categories/' + categoryId);
-    
+
     return response.data;
 }
 

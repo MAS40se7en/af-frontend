@@ -116,11 +116,7 @@ export const CategoryImageSchema = (options?: {
 }) => z
     .custom<FileWithPreview>()
     .superRefine((f, ctx) => {
-        if (!f) {
-            ctx.addIssue({
-                code: "custom",
-                message: "Image is required."
-            });
+        if(!f) {
             return;
         }
 

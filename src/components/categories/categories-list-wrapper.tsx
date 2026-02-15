@@ -1,8 +1,8 @@
 import useCategories from "@/hooks/use-categories"
 import CategoryCard from "./category-card";
 import { useAuth } from "@/contexts/AuthContext";
-import CreateCategoryDialog from "./components/create-category";
 import { useEffect, useState } from "react";
+import CreateCategoryDialog from "./components/create-category";
 
 const CategoriesListWrapper = () => {
   const { isAdmin } = useAuth();
@@ -39,7 +39,8 @@ const CategoriesListWrapper = () => {
           addCategory={addCategory} 
           addCategoryError={addCategoryError} 
           isAddingCategory={isAddingCategory}
-          isAddingCategorySuccess={isAddingCategorySuccess} />
+          isAddingCategorySuccess={isAddingCategorySuccess} 
+          />
         )}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">

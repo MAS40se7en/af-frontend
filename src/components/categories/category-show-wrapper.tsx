@@ -11,9 +11,7 @@ const CategoryShowWrapper = ({
     isAdmin
 }: categoryProps) => {
     const { categoryId } = useParams();
-    const { category, categoryError } = useCategory(Number(categoryId));
-
-    console.log(category);
+    const { category, categoryError, refetchCategory } = useCategory(Number(categoryId));
 
     if (categoryError) {
         return <div>{categoryError.message}</div>;
@@ -22,7 +20,7 @@ const CategoryShowWrapper = ({
 
     return (
         <div className="w-full mx-auto md:w-4/5 lg:min-w-5/6 flex flex-col items-center justify-center py-10 gap-5">
-            <CategoryDetails category={category} isAdmin={isAdmin} />
+            <CategoryDetails category={category} isAdmin={isAdmin} refetchCategory={refetchCategory} />
             <div className="w-5/6 md:w-full">
                 <CategoryArtworks artworks={category?.artWorks} categoryId={category?.id} />
             </div>

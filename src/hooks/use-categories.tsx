@@ -1,5 +1,5 @@
 import type { createCategorySchema } from "@/lib/zod-schemas";
-import { createCategory, deleteCategory, getCategories, getCategory } from "@/services/categoryService";
+import { createCategory, deleteCategory, editCategory, getCategories, getCategory } from "@/services/categoryService";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import type { FileWithPreview } from "./use-file-upload";
 import type z from "zod";
@@ -39,6 +39,11 @@ export type categoryActions = {
     isAddingCategoryError: boolean,
     addCategoryError: any,
     isAddingCategorySuccess: boolean,
+    updateCategory: ({ id, file, category, removeImage }: { id: number, category: z.infer<typeof createCategorySchema>, file: FileWithPreview, removeImage?: boolean }) => void,
+    isUpdatingCategory: boolean,
+    isUpdatingCategoryError: boolean,
+    updateCategoryError: any,
+    isUpdatingCategorySuccess: boolean,
     destroyCategory: (id: number) => void,
     isDeletingCategory: boolean,
     isDeletingCategoryError: boolean,
@@ -71,6 +76,25 @@ function useCategories(): categoryActions {
     });
 
     const {
+        mutate: updateCategory,
+        isPending: isUpdatingCategory,
+        isError: isUpdatingCategoryError,
+        error: updateCategoryError,
+        isSuccess: isUpdatingCategorySuccess
+    } = useMutation({
+        mutationKey: ['update-category'],
+        mutationFn: editCategory,
+        onSuccess: ({ id: updatedCategoryId }) => {
+            toast.success('Category updated successfully.');
+            queryClient.invalidateQueries({ queryKey: ['fetch-category', updatedCategoryId] });
+        },
+        onError: (e) => {
+            console.error('Error updating category:', e);
+            toast.error('Error updating category.');
+        }
+    })
+
+    const {
         mutate: destroyCategory,
         isPending: isDeletingCategory,
         isError: isDeletingCategoryError,
@@ -89,37 +113,44 @@ function useCategories(): categoryActions {
     })
 
 
-  return {
-      categories,
-      isPending,
-      error,
-      addCategory,
-      refetchCategories,
-      isAddingCategory,
-      isAddingCategoryError,
-      addCategoryError,
-      isAddingCategorySuccess,
-      destroyCategory,
-      isDeletingCategory,
-      isDeletingCategoryError,
-      deleteCategoryError,
-      isDeletingCategorySuccess
-  }
+    return {
+        categories,
+        isPending,
+        error,
+        addCategory,
+        refetchCategories,
+        isAddingCategory,
+        isAddingCategoryError,
+        addCategoryError,
+        isAddingCategorySuccess,
+        updateCategory,
+        isUpdatingCategory,
+        isUpdatingCategoryError,
+        updateCategoryError,
+        isUpdatingCategorySuccess,
+        destroyCategory,
+        isDeletingCategory,
+        isDeletingCategoryError,
+        deleteCategoryError,
+        isDeletingCategorySuccess
+    }
 }
 
 export const useCategory = (categoryId: number): {
     category: Category,
     categoryError: any,
+    refetchCategory: () => void
 } => {
     const {
         data: category,
-        error: categoryError
-    } = useSuspenseQuery({ 
-        queryKey: ['fetch-category', categoryId], 
-        queryFn: getCategory 
+        error: categoryError,
+        refetch: refetchCategory
+    } = useSuspenseQuery({
+        queryKey: ['fetch-category', categoryId],
+        queryFn: getCategory
     });
 
-    return { category, categoryError }
+    return { category, categoryError, refetchCategory }
 };
 
 export default useCategories

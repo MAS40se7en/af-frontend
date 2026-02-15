@@ -28,7 +28,7 @@ const ImagesWrapper = ({ artwork, userId }: props) => {
                                     />
                                 </DialogTrigger>
 
-                                <DialogContent className="p-0 overflow-auto w-5/6 md:min-w-3xl  max-h-230">
+                                <DialogContent className="p-0 overflow-auto w-5/6 md:min-w-3xl max-h-210">
                                     <ImageModal imageUrl={image.imageUrl} />
                                 </DialogContent>
                             </Dialog>

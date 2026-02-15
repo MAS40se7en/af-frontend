@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 
 interface NoElementsProps {
     url: string,
+    state: any,
     text: string,
     objectName: string,
     className?: string,
@@ -12,6 +13,7 @@ interface NoElementsProps {
 
 function NoElements({
     url,
+    state,
     text,
     className,
     objectName
@@ -27,7 +29,7 @@ function NoElements({
                 {text}
             </EmptyDescription>
             <EmptyContent className={cn("flex-row justify-center gap-2", className)}>
-                <Link to={url} className="bg-foreground text-background px-3 py-2 rounded-lg hover:bg-foreground/90 active:bg-foreground/70">Create one</Link>
+                <Link to={url} state={{ from: state }} className="bg-foreground text-background px-3 py-2 rounded-lg hover:bg-foreground/90 active:bg-foreground/70">Create one</Link>
             </EmptyContent>
         </EmptyHeader>
     </Empty>

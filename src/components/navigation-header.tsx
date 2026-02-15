@@ -5,6 +5,7 @@ import { Menu } from "lucide-react"
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTrigger } from "./ui/drawer"
 import { useEffect, useState } from "react"
 import NavLinks from "./nav-links"
+import Icon from "./icon"
 
 const NavigationHeader = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
@@ -20,7 +21,7 @@ const NavigationHeader = () => {
                 <div className="flex items-center gap-7">
                     <Drawer open={openDrawer} onOpenChange={setOpenDrawer} direction="right">
                         <DrawerTrigger asChild className="md:hidden">
-                            <Menu />
+                            <Menu className="hover:cursor-pointer" />
                         </DrawerTrigger>
                         <DrawerContent>
                             <DrawerHeader>
@@ -30,10 +31,7 @@ const NavigationHeader = () => {
                             </DrawerHeader>
                         </DrawerContent>
                     </Drawer>
-                    <div className="flex items-center gap-2">
-                        <img src="/AFbigHeader.png" alt="logo" className="w-[2rem] rounded-md" />
-                        <span className="font-semibold">ArtFocused</span>
-                    </div>
+                    <Icon />
 
                     <div className="hidden md:block">
                         <NavLinks />

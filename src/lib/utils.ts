@@ -37,3 +37,12 @@ export function sortItemsByDate({items, sortOptions}: {items: any[], sortOptions
     return items.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
   }
 }
+
+export function loadImageDimenstions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.width, height: img.height });
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  })
+}

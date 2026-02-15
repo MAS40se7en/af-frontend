@@ -1,3 +1,4 @@
+import type { FileWithPreview } from "@/hooks/use-file-upload";
 import { z } from "zod"
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -90,24 +91,72 @@ export const filesArraySchema = (options?: {
     maxSize?: number;
     accept?: string[];
 }) => z
-        .array(fileWithPreviewSchema)
-        .superRefine((files, ctx) => {
-            if (options?.maxFiles && files.length > options.maxFiles) {
+    .array(fileWithPreviewSchema)
+    .superRefine((files, ctx) => {
+        if (options?.maxFiles && files.length > options.maxFiles) {
+            ctx.addIssue({
+                code: 'custom',
+                message: `Maximum ${options.maxFiles} files allowed.`
+            });
+        }
+
+        for (const f of files) {
+            if (f.file instanceof File && options?.maxSize && f.file.size > options.maxSize) {
                 ctx.addIssue({
                     code: 'custom',
-                    message: `Maximum ${options.maxFiles} files allowed.`
+                    message: `File ${f.file.name} is too large.`
+                });
+            }
+        }
+    });
+
+export const CategoryImageSchema = (options?: {
+    maxSize?: number;
+    accept?: string[];
+}) => z
+    .custom<FileWithPreview>()
+    .superRefine((f, ctx) => {
+        if(!f) {
+            return;
+        }
+
+        if (f.file instanceof File) {
+            if (options?.maxSize && f.file.size > options.maxSize) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: `Image file is too large.`
                 });
             }
 
-            for (const f of files) {
-                if (f.file instanceof File && options?.maxSize && f.file.size > options.maxSize) {
+            if (options?.accept?.length) {
+                const valid = options.accept.some(type =>
+                    f.file.type === type || f.file.type.startsWith(type.replace('/*', '/'))
+                );
+
+                if (!valid) {
                     ctx.addIssue({
-                        code: 'custom',
-                        message: `File ${f.file.name} is too large.`
+                        code: "custom",
+                        message: "Invalid image format."
                     });
                 }
             }
-        });
+        }
+
+        if (f.width && f.height) {
+            const TARGET_RATIO = 16 / 9;
+            const TOLERANCE = 0.05;
+
+            const ratio = f.width / f.height;
+            const diff = Math.abs(ratio - TARGET_RATIO) / TARGET_RATIO;
+
+            if (diff > TOLERANCE) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: "Image aspect ratio must be 16:9."
+                });
+            }
+        }
+    })
 
 export const createArtworkSchema = z.object({
     title: z.string().min(2, {
@@ -146,4 +195,30 @@ export const replySchema = z.object({
     }).max(1500, {
         message: "Reply must be at most 1500 characters long."
     }),
+})
+
+export const createCategorySchema = z.object({
+    name: z.string().min(2, {
+        message: "Name must be at least 2 characters long."
+    }).max(50, {
+        message: "Name must be at most 50 characters long."
+    }),
+    code: z.string().min(2, {
+        message: "Name must be at least 2 characters long."
+    }).max(4, {
+        message: "Name must be at most 4 characters long."
+    }),
+    description: z.string().min(2, {
+        message: "Description must be at least 2 characters long."
+    }).max(500, {
+        message: "Description must be at most 500 characters long."
+    }),
+})
+
+export const createCategoryFormSchema = z.object({
+    category: createCategorySchema,
+    file: CategoryImageSchema({
+        maxSize: 5 * 1024 * 1024,
+        accept: ACCEPTED_TYPES
+    })
 })

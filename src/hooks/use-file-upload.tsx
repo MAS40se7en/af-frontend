@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
+import { loadImageDimenstions } from '@/lib/utils';
 
 export type FileMetadata = {
     name: string;
@@ -21,6 +22,8 @@ export type FileWithPreview = {
     id: string;
     order?: number;
     preview?: string;
+    width?: number;
+    height?: number;
 };
 
 export type FileUploadOptions = {
@@ -38,6 +41,7 @@ export type FileUploadState = {
     files: FileWithPreview[];
     isDragging: boolean;
     errors: string[];
+    warnings: string[];
 };
 
 export type FileUploadActions = {
@@ -98,6 +102,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         })),
         isDragging: false,
         errors: [],
+        warnings: [],
     });
 
     const existingImages = useMemo(
@@ -212,7 +217,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     }, [onFilesChange]);
 
     const addFiles = useCallback(
-        (newFiles: FileList | File[]) => {
+        async (newFiles: FileList | File[]) => {
             if (!newFiles || newFiles.length === 0) return;
 
             const newFilesArray = Array.from(newFiles);
@@ -232,6 +237,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
             }
 
             const validFiles: FileWithPreview[] = [];
+            const warnings: string[] = [];
 
             for (const file of newFilesArray) {
                 if (multiple) {
@@ -257,10 +263,21 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
                 if (error) {
                     errors.push(error);
                 } else {
+                    const metadata = file.type.startsWith('image/')
+                     ? await loadImageDimenstions(file)
+                     : { width: 0, height: 0 };
+
+                     if (metadata.width || metadata.width > 1200) {
+                         warnings.push(
+                            `Image "${file.name}" is under 1200px wide. Quality may be reduced.`
+                         )
+                     }
+
                     validFiles.push({
                         file,
                         id: generateUniqueId(file),
                         preview: createPreview(file),
+                        ...metadata
                     });
                 }
             }
@@ -278,7 +295,8 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
                     return {
                         ...prev,
                         files: ordered,
-                        errors
+                        errors,
+                        warnings
                     };
                 });
             } else if (errors.length > 0) {

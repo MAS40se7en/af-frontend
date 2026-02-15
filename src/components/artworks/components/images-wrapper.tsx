@@ -28,7 +28,7 @@ const ImagesWrapper = ({ artwork, userId }: props) => {
                                     />
                                 </DialogTrigger>
 
-                                <DialogContent className="p-0 overflow-auto w-5/6 md:min-w-3xl  max-h-230">
+                                <DialogContent className="p-0 overflow-auto w-5/6 md:min-w-3xl max-h-210">
                                     <ImageModal imageUrl={image.imageUrl} />
                                 </DialogContent>
                             </Dialog>
@@ -56,7 +56,7 @@ const ImagesWrapper = ({ artwork, userId }: props) => {
                     <div className="flex gap-2 items-center">
                         <ArtworkLikes userId={userId} artwork={artwork} />
                         <div className="flex gap-1 items-center">
-                            <MessageSquare className="size-6 fill-white" />
+                            <MessageSquare className="size-6 dark:fill-white fill-black" />
                             <span className="text-xs">{artwork.commentCount}</span>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 import { Controller, useForm } from "react-hook-form"
 import UploadArtworkImages from "./upload-artwork-images"
 import z from "zod"
-import { ACCEPTED_TYPES, createArtworkFormSchema, createArtworkSchema, MAX_FILE_SIZE } from "@/lib/zod-schemas"
+import { createArtworkFormSchema, createArtworkSchema, MAX_FILE_SIZE } from "@/lib/zod-schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useArtworks } from "@/hooks/use-artworks"
 import { useFileUpload } from "@/hooks/use-file-upload"
@@ -11,16 +11,17 @@ import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from 
 import { Button } from "@/components/ui/button"
 import UseCategories from "@/hooks/use-categories"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useLocation } from "react-router-dom"
 
 const maxSize = MAX_FILE_SIZE;
-
-const acceptedTypes = ACCEPTED_TYPES;
 
 const maxFiles = 5
 
 function CreateArtworkForm() {
-  const { addArtwork, isAddingArtwork, addArtworkError } = useArtworks();
-  const { categories, isPending, error } = UseCategories();
+  const { addArtwork } = useArtworks();
+  const { categories, isPending } = UseCategories();
+  const location = useLocation();
+  const { from } = location.state || {};
 
   const [
     fileState,
@@ -37,7 +38,7 @@ function CreateArtworkForm() {
     defaultValues: {
       title: "",
       description: "",
-      categoryId: undefined
+      categoryId: from || undefined
     }
   });
 
@@ -63,7 +64,7 @@ function CreateArtworkForm() {
 
       if (fileErrors?.length) {
         form.setError("root.files", {
-          type: "manuel",
+          type: "manual",
           message: fileErrors[0]
         })
       }

@@ -36,6 +36,7 @@ const AdminActions = ({ category, refetchCategory }: AdminActionsProps) => {
             <p className="text-sm text-muted-foreground">ID: {category?.id}</p>
             {/** TODO: <EditCategoryDialog category={category} /> */}
             <CreateCategoryDialog
+                variant="edit"
                 category={category}
                 open={open}
                 setOpen={setOpen}

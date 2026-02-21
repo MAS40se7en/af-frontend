@@ -33,13 +33,14 @@ const CategoriesListWrapper = () => {
           <p className="text-sm text-muted-foreground">Artworks are grouped in the categories they are assigned to.</p>
         </div>
         {isAdmin && (
-          <CreateCategoryDialog 
-          open={open}
-          setOpen={setOpen}
-          addCategory={addCategory} 
-          addCategoryError={addCategoryError} 
-          isAddingCategory={isAddingCategory}
-          isAddingCategorySuccess={isAddingCategorySuccess} 
+          <CreateCategoryDialog
+            variant="create"
+            open={open}
+            setOpen={setOpen}
+            addCategory={addCategory}
+            addCategoryError={addCategoryError}
+            isAddingCategory={isAddingCategory}
+            isAddingCategorySuccess={isAddingCategorySuccess}
           />
         )}
       </div>

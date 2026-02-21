@@ -3,7 +3,7 @@ import type { FileMetadata, FileWithPreview } from "./use-file-upload";
 import { createArtworkSchema } from "@/lib/zod-schemas";
 import type z from "zod";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createArtwork, fetchArtwork, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
+import { createArtwork, fetchArtwork, fetchHighlightedArtworks, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack";
 import { Ban } from "lucide-react";
@@ -76,6 +76,8 @@ export type ArtworksActions = {
     isDeletingArtworkSuccess?: boolean;
     myArtworks?: ArtworkList[];
     myArtworksError?: any;
+    highlightedArtworks?: ArtworkList[];
+    highlightedArtworksError?: any;
 }
 
 export const useArtworks = (): ArtworksActions => {
@@ -93,6 +95,14 @@ export const useArtworks = (): ArtworksActions => {
         queryKey: ['my-artworks'],
         queryFn: fetchMyArtworks,
     });
+
+    const {
+        data: highlightedArtworks,
+        error: highlightedArtworksError,
+    } = useSuspenseQuery({
+      queryKey: ['highlighted-artworks'],
+      queryFn: fetchHighlightedArtworks,  
+    })
 
     const {
         mutate: addArtwork,
@@ -188,6 +198,8 @@ export const useArtworks = (): ArtworksActions => {
         isDeletingArtworkSuccess,
         myArtworks,
         myArtworksError,
+        highlightedArtworks,
+        highlightedArtworksError
     }
 }
 

@@ -1,5 +1,5 @@
 import type { createCategorySchema } from "@/lib/zod-schemas";
-import { createCategory, deleteCategory, editCategory, getCategories, getCategory } from "@/services/categoryService";
+import { createCategory, deleteCategory, editCategory, getCategories, getCategory, getTopCategories } from "@/services/categoryService";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import type { FileWithPreview } from "./use-file-upload";
 import type z from "zod";
@@ -26,6 +26,7 @@ export type CategoryList = {
     code: string;
     imageUrl: string;
     artWorkCount: number;
+    totalLikes: number;
     createdAt: Date
 }
 
@@ -33,8 +34,12 @@ export type categoryActions = {
     categories: CategoryList[],
     isPending: boolean,
     error: any,
+    topCategories: CategoryList[],
+    isTopCategoriesPending: boolean,
+    topCategoriesError: any,
     addCategory: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
-    refetchCategories: () => void
+    refetchCategories: () => void;
+    refetchTopCategories: () => void;
     isAddingCategory: boolean,
     isAddingCategoryError: boolean,
     addCategoryError: any,
@@ -63,6 +68,16 @@ function useCategories(): categoryActions {
         queryKey: ['fetch-categories'],
         queryFn: getCategories,
     });
+
+    const {
+        data: topCategories,
+        isPending: isTopCategoriesPending,
+        error: topCategoriesError,
+        refetch: refetchTopCategories
+    } = useSuspenseQuery({
+        queryKey: ['fetch-top-categories'],
+        queryFn: getTopCategories,
+    })
 
     const {
         mutate: addCategory,
@@ -117,8 +132,12 @@ function useCategories(): categoryActions {
         categories,
         isPending,
         error,
+        topCategories,
+        isTopCategoriesPending,
+        topCategoriesError,
         addCategory,
         refetchCategories,
+        refetchTopCategories,
         isAddingCategory,
         isAddingCategoryError,
         addCategoryError,

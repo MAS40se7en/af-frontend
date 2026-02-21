@@ -50,6 +50,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   --footer-background: oklch(39.809% 0.11715 24.122);
   --footer-foreground: oklch(76.227% 0.1027 19.671);
+  --hero-overlay: linear-gradient(0deg,rgba(241, 212, 210, 1) 8%, rgba(241, 212, 210, 1) 2%, rgba(51, 10, 10, 0.27) 36%);
 }
 
 a {
@@ -127,6 +128,7 @@ button {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-footer-background: var(--footer-background);
   --color-footer-foreground: var(--footer-foreground);
+  --background-image-hero-overlay: var(--hero-overlay);
 }
 
 .dark {
@@ -163,6 +165,7 @@ button {
   --sidebar-ring: oklch(0.556 0 0);
   --footer-background: oklch(16.023% 0.02892 20.756);
   --footer-foreground: oklch(61.267% 0.09471 20.127);
+  --hero-overlay: linear-gradient(0deg,rgba(0, 0, 0, 1) 12%, rgba(12, 2, 2, 1) 13%, rgba(51, 10, 10, 0) 79%);
 }
 
 @layer base {

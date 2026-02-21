@@ -9,6 +9,7 @@ import { ThemeProvider } from './components/theme-provider.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { Toaster } from 'sonner'
 import Footer from './components/footer.tsx'
+import ScrollToTop from './components/ScrollToTop.tsx'
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
+        <ScrollToTop />
         <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
           <App />
           <Footer />

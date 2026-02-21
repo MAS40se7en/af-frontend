@@ -14,8 +14,6 @@ const ArtworkLikes = ({ artwork, userId }: props) => {
     const userLikedArtwork = artwork.likedBy.some((u) => u.id == userId);
     const [likeState, setLikeState] = useState<boolean>(userLikedArtwork);
 
-    console.log(artwork, userLikedArtwork);
-
     const {
         likeArtwork,
         isAddingLikeSuccess,

@@ -13,36 +13,59 @@ import { useEffect, useState } from "react"
 import type { Category } from "@/hooks/use-categories"
 import { SquarePen } from "lucide-react"
 
-interface CreateCategoryDialogProps {
-    addCategory?: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
-    isAddingCategory?: boolean;
-    addCategoryError?: any;
+interface BaseCategoryDialogProps {
     open?: boolean;
     setOpen?: (open: boolean) => void;
-    isAddingCategorySuccess?: boolean;
-    category?: Category;
-    updateCategory?: ({ id, file, category, removeImage }: { id: number, category: z.infer<typeof createCategorySchema>, file: FileWithPreview, removeImage?: boolean }) => void;
-    isUpdatingCategory?: boolean;
-    updateCategoryError?: any;
-    isUpdatingCategorySuccess?: boolean;
     isEditing?: boolean;
 }
 
+type CreateCategoryDialogProps =
+    BaseCategoryDialogProps & {
+        variant: "create";
+        addCategory: ({
+            file,
+            category
+        }: {
+            category: z.infer<typeof createCategorySchema>,
+            file: FileWithPreview
+        }) => void;
+        isAddingCategory: boolean;
+        addCategoryError: any;
+        isAddingCategorySuccess: boolean;
+    }
+
+type EditCategoryDialogProps =
+    BaseCategoryDialogProps & {
+        variant: "edit";
+        updateCategory: ({
+            id,
+            file,
+            category,
+            removeImage
+        }: {
+            id: number,
+            category: z.infer<typeof createCategorySchema>,
+            file: FileWithPreview,
+            removeImage?: boolean
+        }) => void;
+        isUpdatingCategory: boolean;
+        updateCategoryError: any;
+        isUpdatingCategorySuccess: boolean;
+        category: Category;
+    }
+
+type CategoryDialogProps =
+    | CreateCategoryDialogProps
+    | EditCategoryDialogProps;
+
 const maxSize = MAX_FILE_SIZE;
 
-const CreateCategoryDialog = ({
-    addCategory,
-    isAddingCategory,
-    addCategoryError,
-    open,
-    setOpen,
-    isAddingCategorySuccess,
-    category,
-    updateCategory,
-    isUpdatingCategory,
-    updateCategoryError,
-    isEditing
-}: CreateCategoryDialogProps) => {
+const CreateCategoryDialog = (props: CategoryDialogProps) => {
+    const {
+        open,
+        setOpen,
+        isEditing
+    } = props;
 
     const [
         fileState,
@@ -58,22 +81,37 @@ const CreateCategoryDialog = ({
 
     const previewUrl =
         fileState.files[0]?.preview ??
-        (removeExistingImage ? null : category?.imageUrl ?? null);
+        (removeExistingImage
+            ? null
+            : props.variant === "edit" ?
+                props.category?.imageUrl ?? null
+                : null);
 
     const form = useForm<z.infer<typeof createCategorySchema>>({
         resolver: zodResolver(createCategorySchema),
         defaultValues: {
-            name: isEditing ? category?.name ?? "" : "",
-            code: isEditing ? category?.code ?? "" : "",
-            description: isEditing ? category?.description ?? "" : "",
+            name: props.variant === "edit" ? props.category?.name ?? "" : "",
+            code: props.variant === "edit" ? props.category?.code ?? "" : "",
+            description: props.variant === "edit" ? props.category?.description ?? "" : "",
         }
     });
 
     useEffect(() => {
-        if (isAddingCategorySuccess) {
+        if (props.variant === "create" && props.isAddingCategorySuccess) {
             form.reset();
         }
-    }, [addCategory, isAddingCategorySuccess])
+
+        if (props.variant === "edit" && props.isUpdatingCategorySuccess) {
+            form.reset();
+            setRemoveExistingImage(false);
+        }
+
+    }, [
+        props.variant,
+        props.variant === "create"
+            ? (props.addCategory, props.isAddingCategorySuccess)
+            : (props.updateCategory, props.isUpdatingCategorySuccess),
+    ])
 
     const onSubmit = () => {
         const file = fileState.files[0];
@@ -97,14 +135,14 @@ const CreateCategoryDialog = ({
             return;
         };
 
-        if (addCategory) {
-            addCategory({
+        if (props.variant === "create" && props.addCategory) {
+            props.addCategory({
                 file: result.data.file,
                 category: result.data.category
             })
-        } else if (updateCategory && category && isEditing) {
-            updateCategory({
-                id: category.id,
+        } else if (props.variant === "edit" && props.updateCategory && props.category && isEditing) {
+            props.updateCategory({
+                id: props.category.id,
                 file: result.data.file,
                 category: result.data.category,
                 removeImage: removeExistingImage
@@ -214,11 +252,27 @@ const CreateCategoryDialog = ({
                     />
                     <DialogFooter>
                         <DialogClose>Close</DialogClose>
-                        <Button type="submit" disabled={isAddingCategory || isUpdatingCategory}>
-                            {isEditing ? "Update Category" : "Add Category"}
+                        <Button
+                            type="submit"
+                            disabled={
+                                props.variant === "create"
+                                    ? props.isAddingCategory
+                                    : props.isUpdatingCategory
+                            }>
+                            {props.variant === "edit" ? "Update Category" : "Add Category"}
                         </Button>
-                        {addCategoryError && !isEditing && <p className="text-destructive">{addCategoryError.message}</p>}
-                        {updateCategoryError && isEditing && <p className="text-destructive">{updateCategoryError.message}</p>}
+                        {props.variant === "create"
+                            && props.addCategoryError
+                            && <p className="text-destructive">
+                                {props.addCategoryError.message}
+                            </p>
+                        }
+                        {props.variant === "edit"
+                            && props.updateCategoryError
+                            && <p className="text-destructive">
+                                {props.updateCategoryError.message}
+                            </p>
+                        }
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -81,6 +81,12 @@ export const fetchMyArtworks = async () => {
     return response.data;
 }
 
+export const fetchHighlightedArtworks = async () => {
+    const response = await api.get('/artworks/highlighted')
+
+    return response.data;
+}
+
 export const fetchArtwork = async (
     { queryKey }: QueryFunctionContext<[string, number]>
 ) => {

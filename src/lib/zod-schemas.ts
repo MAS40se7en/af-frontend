@@ -60,6 +60,7 @@ export const registerFormSchema = z.object({
         .regex(/^[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9_]*$/, {
             message: "Username must only start with letters and may contain numbers and underscores."
         }),
+    isArtist: z.boolean(),
     email: emailSchema,
     password: passwordSchema,
     passwordConfirm: z.string(),

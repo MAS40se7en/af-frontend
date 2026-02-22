@@ -16,6 +16,7 @@ import CreateArtwork from './pages/artworks/Create'
 import ShowArtwork from './pages/artworks/Show'
 import EditArtwork from './pages/artworks/Edit'
 import ShowCategory from './pages/categories/Show'
+import ArtistRegister from './pages/auth/ArtistRegister'
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path='/auth' element={<PublicOnlyRoute />}>
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
+          <Route path='/auth/register/artist' element={<ArtistRegister />} />
         </Route>
       </Routes>
     </div>

@@ -4,9 +4,12 @@ export interface RegisterUserData {
     firstName: string;
     lastName: string;
     username: string;
+    isArtist: boolean;
     email: string;
     password: string;
     passwordConfirm: string;
+    biography?: string;
+    image?: File
 }
 
 export interface LoginUserData {
@@ -17,7 +20,6 @@ export interface LoginUserData {
 export const signUpUser = async (userData: RegisterUserData) => {
     const response = await api.post('/users/register', userData);
 
-    console.log(response);
     return response;
 }
 

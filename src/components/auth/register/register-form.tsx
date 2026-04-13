@@ -9,10 +9,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import useScreenSize from "@/hooks/use-screen-size";
 
 function RegisterForm() {
     const { signUp } = useAuth();
     const navigate = useNavigate();
+    const screenSize = useScreenSize();
 
     const form = useForm<z.infer<typeof registerFormSchema>>({
         resolver: zodResolver(registerFormSchema),
@@ -28,8 +31,6 @@ function RegisterForm() {
     });
 
     function onSubmit(values: z.infer<typeof registerFormSchema>) {
-        console.log(values);
-
         if (values.isArtist) {
             navigate('/auth/register/artist', { state: values });
         } else {
@@ -39,7 +40,10 @@ function RegisterForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 px-3">
+            <form onSubmit={form.handleSubmit(onSubmit)} className={cn(
+                "space-y-4 px-3 flex flex-col justify-center min-h-full",
+                Object.keys(form.formState.errors).length > 0 && (screenSize === "sm" || screenSize === "xs") && "overflow-y-auto"
+            )}>
                 <div className="flex gap-2">
                     <FormField
                         control={form.control}
@@ -134,7 +138,7 @@ function RegisterForm() {
                     )}
                 />
                 <Button variant={"default"} className="w-full mt-1">
-                    {form.getValues().isArtist ? "Continue" : "Register"}
+                    Register
                 </Button>
             </form>
         </Form>

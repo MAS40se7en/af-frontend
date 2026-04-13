@@ -65,7 +65,7 @@ export const registerFormSchema = z.object({
     password: passwordSchema,
     passwordConfirm: z.string(),
 }).refine((data) => data.password === data.passwordConfirm, {
-    path: ["passConfirm"],
+    path: ["passwordConfirm"],
     message: "Passwords do not match.",
 });
 
@@ -222,4 +222,20 @@ export const createCategoryFormSchema = z.object({
         maxSize: 5 * 1024 * 1024,
         accept: ACCEPTED_TYPES
     })
+})
+
+export const artistRegisterFormSchema = registerFormSchema.extend({
+    biography: z.string().min(50, {
+        message: "Biography must be at least 50 characters long."
+    }).max(1000, {
+        message: "Biography must be at most 1000 characters long."
+    }),
+    image: z
+        .instanceof(File)
+        .refine(file => file.size > 0, "Image is required.")
+        .refine(file => file.size <= MAX_FILE_SIZE, `Image size must be less than ${MAX_FILE_SIZE}}MB.`)
+        .refine(
+            file => ACCEPTED_TYPES.some(type => file.type === type || file.type.startsWith(type.replace('/*', '/'))),
+            "Invalid image format, Only JPEG, JPG, PNG, WEBP are allowed."
+        )
 })

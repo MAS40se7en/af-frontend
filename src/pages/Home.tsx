@@ -28,14 +28,20 @@ const Home = () => {
 
       </div>
       <div className="min-h-120 dark:bg-black py-5">
+        <div className="flex flex-col gap-10 lg:w-4/5 mx-auto">
+          <ErrorBoundary fallback={<div>error</div>} >
+          <Suspense fallback={<div>Loading...</div>} >
+            <ArtistsHighlights />
+          </Suspense>
+        </ErrorBoundary>
+
         <ErrorBoundary fallback={<div>error</div>} >
           <Suspense fallback={<div>Loading...</div>} >
             <TopCategoriesList />
           </Suspense>
         </ErrorBoundary>
-
-
-        <ArtistsHighlights />
+        </div>
+        
       </div>
     </>
   )

@@ -47,10 +47,10 @@ function PublicOnlyRoute() {
                     </div>
                 </div>
             </div>
-            <div className="flex justify-center items-center">
-                <div className="h-210 md:max-h-150 border-2 w-120 md:w-172 lg:w-200 rounded-xl p-0 flex flex-col md:flex-row overflow-hidden dark:bg-stone-950 bg-stone-200 relative">
-                    <div className="border-b-2 md:border-b-0 md:border-r-2 md:w-1/2 overflow-hidden flex items-center justify-center">
-                        <img src="/AFbigHeader.png" alt="logo" className="w-full md:h-150 md:min-w-160" />
+            <div className="flex justify-center items-start h-200">
+                <div className="h-200 md:h-180 border-2 w-120 md:w-172 lg:w-220 rounded-xl p-0 flex flex-col md:flex-row overflow-hidden dark:bg-stone-950 bg-stone-200 relative">
+                    <div className="max-h-50 md:max-h-180 border-b-2 md:border-b-0 md:border-r-2 md:w-1/2 overflow-hidden flex items-center justify-center">
+                        <img src="/AFbigHeader.png" alt="logo" className=" md:min-h-180 md:min-w-200" />
                     </div>
                     <Outlet />
                 </div>

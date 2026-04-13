@@ -13,7 +13,7 @@ const TopCategoriesList = () => {
           Top Categories 
           <Link to="/categories" className="flex gap-2 border outline-2 p-1 rounded-full opacity-30 transition-all duration-300 group-hover:opacity-100 group-hover:px-2">
             <span className="font-light text-sm opacity-0 group-hover:opacity-100 transition-all duration-300">check out more</span>
-            <ChevronRight className="size-5 -ml-26 group-hover:ml-0 transition-all duration-300" />
+            <ChevronRight className="size-5 -ml-24 group-hover:ml-0 transition-all duration-300" />
           </Link>
         </h2>
         <p className="text-sm text-muted-foreground">Artworks are grouped in the categories they are assigned to. Categories are ordered by the number of likes each artwork has.</p>

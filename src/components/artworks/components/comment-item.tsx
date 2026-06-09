@@ -2,10 +2,10 @@ import { GeneratedAvatar } from "@/components/generated-avatar"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { Comment, ReplyActions } from "@/hooks/use-comments"
+import type { Comment, Reply as ReplyType, ReplyActions } from "@/hooks/use-comments"
 import { cn, formatDate, sortItemsByDate, type sortOptions } from "@/lib/utils"
 import { ChevronRight, EllipsisVertical, Reply } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import ReplyItem from "./reply-item"
 import ReplyToComment from "./reply-to-comment"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -23,22 +23,15 @@ interface CommentProps {
 const CommentItem = (
     { comment, replyActions, artworkId, userId, isUserArtist, deleteComment }: CommentProps
 ) => {
-    const [replying, setReplying] = useState(false);
-    const [showReplies, setShowReplies] = useState(false);
+    const [replying, setReplying] = useState(!(replyActions.postReplySuccess && replyActions.lastRepliedCommentId === comment.id));
+    const [showReplies, setShowReplies] = useState(replyActions.postReplySuccess && replyActions.lastRepliedCommentId === comment.id);
 
     const [sort, setSort] = useState<sortOptions>({
         value: "latest",
         label: "Latest"
     });
 
-    useEffect(() => {
-        if (replyActions.postReplySuccess && replyActions.lastRepliedCommentId === comment.id) {
-            setShowReplies(true);
-            setReplying(false);
-        }
-    }, [replyActions.postReply, replyActions.postReplySuccess])
-
-    const sortedReplies = sortItemsByDate({ items: comment.replies, sortOptions: sort });
+    const sortedReplies: ReplyType[] = sortItemsByDate({ items: comment.replies, sortOptions: sort }) as ReplyType[];
 
     return (
         <div className="flex flex-col transition-all duration-200">
@@ -135,7 +128,7 @@ const CommentItem = (
                 showReplies || replying ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
             )}>
                 <div className="overflow-hidden">
-                    {replyActions.isPostingReplyError && <div className="text-red-500 text-sm">{replyActions.postReplyError}</div>}
+                    {replyActions.isPostingReplyError && <div className="text-red-500 text-sm">{replyActions.postReplyError?.message}</div>}
                     {replying && <ReplyToComment
                         artworkId={artworkId}
                         commentId={comment.id}

@@ -1,9 +1,8 @@
-import { useAuth } from "@/contexts/AuthContext";
 import type { FileMetadata, FileWithPreview } from "./use-file-upload";
 import { createArtworkSchema } from "@/lib/zod-schemas";
 import type z from "zod";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createArtwork, fetchArtwork, fetchHighlightedArtworks, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
+import { createArtwork, fetchArtwork, fetchArtworks, fetchHighlightedArtworks, fetchMyArtworks, removeArtwork, updateArtworkDetails } from "@/services/artworkService";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack";
 import { Ban } from "lucide-react";
@@ -62,31 +61,37 @@ export type listImageInfo = {
 
 export type ArtworksActions = {
     addArtwork?: ({ files, artwork }: { artwork: z.infer<typeof createArtworkSchema>, files: FileWithPreview[] }) => void;
-    addArtworkError?: any;
+    addArtworkError?: Error | null;
     isAddingArtwork?: boolean;
     isAddingArtworkError?: boolean;
+
     updateArtwork?: ({ files, artwork }: { artwork: z.infer<typeof createArtworkSchema>, files: FileWithPreview[] }) => void;
-    updateArtworkError?: any;
+    updateArtworkError?: Error | null;
     isUpdatingArtwork?: boolean;
     isUpdatingArtworkError?: boolean;
+
     deleteArtwork?: (id: number) => void;
-    deleteArtworkError?: any;
+    deleteArtworkError?: Error | null;
     isDeletingArtwork?: boolean;
     isDeletingArtworkError?: boolean;
     isDeletingArtworkSuccess?: boolean;
+
     myArtworks?: ArtworkList[];
-    myArtworksError?: any;
+    myArtworksError?: Error | null;
+
+    artworks?: ArtworkList[];
+    artworksError?: Error | null;
+    isLoadingArtworks?: boolean;
+    refetchArtworks?: () => void;
+
     highlightedArtworks?: ArtworkList[];
-    highlightedArtworksError?: any;
+    highlightedArtworksError?: Error | null;
 }
 
-export const useArtworks = (): ArtworksActions => {
-    const { user, isUserLoading } = useAuth();
+export const useArtworks = (
+    search?: string,
+): ArtworksActions => {
     const navigate = useNavigate();
-
-    if (!user || isUserLoading) {
-        return {}
-    }
 
     const {
         data: myArtworks,
@@ -94,6 +99,15 @@ export const useArtworks = (): ArtworksActions => {
     } = useSuspenseQuery({
         queryKey: ['my-artworks'],
         queryFn: fetchMyArtworks,
+    });
+
+    const {
+        data: artworks,
+        error: artworksError,
+        isLoading: isLoadingArtworks
+    } = useSuspenseQuery({
+        queryKey: ['get-artworks', search],
+        queryFn: fetchArtworks,
     });
 
     const {
@@ -120,10 +134,10 @@ export const useArtworks = (): ArtworksActions => {
 
             navigate('/account/my-artworks');
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
             console.error('Error adding artwork', error);
             toast('Error adding artwork.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -144,10 +158,10 @@ export const useArtworks = (): ArtworksActions => {
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
             navigate(`/artworks/${artworkId}`);
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
             console.error('Error updating artwork', error);
             toast('Error updating artwork.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -169,10 +183,10 @@ export const useArtworks = (): ArtworksActions => {
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
             navigate('/account/my-artworks');
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
             console.error('Error deleting artwork', error);
             toast('Error deleting artwork.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -187,17 +201,25 @@ export const useArtworks = (): ArtworksActions => {
         addArtworkError,
         isAddingArtwork,
         isAddingArtworkError,
+
         updateArtwork,
         updateArtworkError,
         isUpdatingArtwork,
         isUpdatingArtworkError,
+
         deleteArtwork,
         deleteArtworkError,
         isDeletingArtwork,
         isDeletingArtworkError,
         isDeletingArtworkSuccess,
+
         myArtworks,
         myArtworksError,
+
+        artworks,
+        artworksError,
+        isLoadingArtworks,
+
         highlightedArtworks,
         highlightedArtworksError
     }
@@ -206,7 +228,7 @@ export const useArtworks = (): ArtworksActions => {
 
 export const useArtwork = (artWorkId: number): {
     artwork: Artwork,
-    artworkError: any,
+    artworkError: Error | null,
     refetchArtwork: () => void,
     artworkImagesToFileMetadeta: (images: listImageInfo[]) => FileMetadata[]
 } => {

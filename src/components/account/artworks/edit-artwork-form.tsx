@@ -43,7 +43,7 @@ const EditArtworkForm = () => {
       form.reset({
         title: artwork.title,
         description: artwork.description,
-        categoryId: artwork.category.id
+        categoryId: artwork.category ? artwork.category.id : undefined
     })
   }
 
@@ -62,7 +62,7 @@ const EditArtworkForm = () => {
   });
 
   if (!artwork || artworkError) {
-    return <div>{artworkError.message}</div>;
+    return <div>{artworkError?.message}</div>;
   }
 
   if (!categories || categories.length === 0) {

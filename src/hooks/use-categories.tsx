@@ -33,26 +33,26 @@ export type CategoryList = {
 export type categoryActions = {
     categories: CategoryList[],
     isPending: boolean,
-    error: any,
+    error: Error | null,
     topCategories: CategoryList[],
     isTopCategoriesPending: boolean,
-    topCategoriesError: any,
+    topCategoriesError: Error | null,
     addCategory: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
     refetchCategories: () => void;
     refetchTopCategories: () => void;
     isAddingCategory: boolean,
     isAddingCategoryError: boolean,
-    addCategoryError: any,
+    addCategoryError: Error | null,
     isAddingCategorySuccess: boolean,
     updateCategory: ({ id, file, category, removeImage }: { id: number, category: z.infer<typeof createCategorySchema>, file: FileWithPreview, removeImage?: boolean }) => void,
     isUpdatingCategory: boolean,
     isUpdatingCategoryError: boolean,
-    updateCategoryError: any,
+    updateCategoryError: Error | null,
     isUpdatingCategorySuccess: boolean,
     destroyCategory: (id: number) => void,
     isDeletingCategory: boolean,
     isDeletingCategoryError: boolean,
-    deleteCategoryError: any,
+    deleteCategoryError: Error | null,
     isDeletingCategorySuccess: boolean
 }
 
@@ -157,7 +157,7 @@ function useCategories(): categoryActions {
 
 export const useCategory = (categoryId: number): {
     category: Category,
-    categoryError: any,
+    categoryError: Error | null,
     refetchCategory: () => void
 } => {
     const {

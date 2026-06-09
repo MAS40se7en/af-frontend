@@ -11,6 +11,10 @@ export default defineConfig([
   globalIgnores(['dist']),
   {
     files: ['**/*.{ts,tsx}'],
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+    },
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -26,7 +30,12 @@ export default defineConfig([
       ...reactHooks.configs.recommended.rules,
 
       'react/react-in-jsx-scope': 'off',
-      'no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_'
+        }
+      ],
     }
   },
 

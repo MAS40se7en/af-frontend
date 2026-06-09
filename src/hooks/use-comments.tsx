@@ -8,6 +8,7 @@ import type { commentSchema, replySchema } from "@/lib/zod-schemas"
 import type z from "zod"
 import type { User } from "./use-artworks"
 import { useState } from "react"
+import type { AxiosError } from "axios"
 
 export type Reply = {
     id: number;
@@ -30,25 +31,25 @@ export type ReplyActions = {
     postReply?: ({ commentId, reply, artworkId }: { commentId: number, reply: z.infer<typeof replySchema>, artworkId: number }) => void;
     isPostingReply: boolean,
     isPostingReplyError: boolean,
-    postReplyError: any
+    postReplyError: Error | null,
     postReplySuccess: boolean
     lastRepliedCommentId: number | null;
     deleteReply: ({ commentId, replyId, artworkId }: { commentId: number, replyId: number, artworkId: number }) => void,
     isDeletingReply: boolean,
     isDeletingReplySuccess: boolean,
-    deleteReplyError: any
+    deleteReplyError: Error | null
 }
 
 export type CommentActions = {
     deleteComment: (commentId: number) => void,
     isDeletingComment: boolean,
     isDeletingCommentSuccess: boolean,
-    deleteCommentError: any,
+    deleteCommentError: Error | null,
 
     postComment?: ({ artworkId, comment }: { artworkId: number, comment: z.infer<typeof commentSchema> }) => void;
     isPostingComment: boolean,
     isPostingCommentError: boolean,
-    postCommentError: any,
+    postCommentError: Error | null,
     postCommentSuccess: boolean,
 }
 
@@ -70,7 +71,7 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         isError: isPostingCommentError,
         error: postCommentError,
         isSuccess: postCommentSuccess
-    } = useMutation({
+    } = useMutation<unknown, AxiosError, { artworkId: number, comment: z.infer<typeof commentSchema> }>({
         mutationKey: ['add-comment'],
         mutationFn: addComment,
         onSuccess: (artworkId) => {
@@ -79,10 +80,10 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => {
             console.error('Error adding comment', error);
             toast('Error adding comment.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -104,10 +105,10 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => {
             console.error('Error adding reply', error);
             toast('Error adding reply.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -128,10 +129,10 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => {
             console.error('Error deleting reply', error);
             toast('Error deleting reply.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -167,7 +168,7 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
 
 export const useGetComments = (artworkId: number): {
     comments: Comment[],
-    commentsError: any,
+    commentsError: Error | null,
     refetchComments: () => void
 } => {
     const {

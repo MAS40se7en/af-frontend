@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserProfile, signInUser, signOutUser, signUpUser, type LoginUserData, type RegisterUserData } from '@/services/authService';
 import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
+import type { AxiosError } from 'axios';
+import { queryClient } from '@/lib/tanstack';
 
 type User = {
     id: number;
@@ -38,15 +40,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  
   const {
     data: userData,
     error: userErrorData,
     isError: isUserError,
     isPending: isUserLoading,
-    refetch: refetchUser
+    refetch: refetchUser,
   } = useQuery({
     queryKey: ['fetch-user'],
     queryFn: async () => {
@@ -65,15 +64,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   useEffect(() => {
-    refetchUser().catch(() => {
-      setUser(null);
-    });
-  }, []);
+  refetchUser().catch(() => {})
+}, [])
 
-  useEffect(() => {
-    setUser(userData || null);
-    if (userData) setIsAdmin(userData.roleName === 'ROLE_ADMIN' || userData.roleName === 'ROLE_TESTER');
-  }, [userData]);
+const user = userData ?? null;
+
+const isAdmin = 
+  user?.roleName === 'ROLE_ADMIN' ||
+  user?.roleName === 'ROLE_TESTER';
+
 
   const {
     mutate: signUp,
@@ -91,11 +90,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         return location.href = '/login';
       },
-      onError: (error: any) => {
+      onError: (error: AxiosError) => {
         console.error("Sign up error:", error);
 
         toast("Failed to sign up.", {
-          description: error.response?.data || error.message,
+          description: error.message,
           icon: <Ban className="text-destructive mr-4" />,
         });
       }
@@ -117,8 +116,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.success('Successfully signed in.');
         await refetchUser();
       },
-      onError: (error) => {
-        console.error("Sign in error:", error);
+      onError: (error: AxiosError) => {
+        console.error("Sign in error:", error.message);
         toast.error('Failed to sign in.');
       }
   });
@@ -129,14 +128,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     mutationKey: ['sign-out'],
     mutationFn: signOutUser,
     onSuccess: async () => {
-      console.log("Sign out successful");
       toast.success('Successfully signed out.');
 
-      setUser(null);
-      await refetchUser();
+      await queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+
+      queryClient.removeQueries({ queryKey: ['fetch-user'] });
     },
-    onError: (error) => {
-      console.error("Sign out error:", error);
+    onError: (error: AxiosError) => {
+      console.error("Sign out error:", error.message);
       toast.error('Failed to sign out.');
     }
   })

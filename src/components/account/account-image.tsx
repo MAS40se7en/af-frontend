@@ -37,7 +37,7 @@ function AccountImage({ image, name, className }: Props) {
             {!className?.includes("size-28") ? (
                 <div className="flex items-center justify-center pb-4 z-50 bottom-0 right-0 absolute w-full">
                 <Drawer open={open} onOpenChange={setOpen}>
-                    <DrawerTrigger className="rounded-full transition-opacity duration-300 transform z-50 opacity-0 group-hover:opacity-100 w-fit text-center flex items-center justify-center bg-muted">
+                    <DrawerTrigger className="rounded-full transition-opacity duration-300 transform z-50 opacity-0 group-hover:opacity-100 w-fit text-center flex items-center justify-center bg-muted px-3">
                         <PencilLine className="mr-2 size-4" />
                         edit
                     </DrawerTrigger>

@@ -12,7 +12,7 @@ export type artist = {
 
 export type ArtistActions = {
   highlightedArtists: artist[];
-  highlightedArtistsError: any;
+  highlightedArtistsError: Error | null;
   refetchHighlightedArtists: () => void;
 }
 

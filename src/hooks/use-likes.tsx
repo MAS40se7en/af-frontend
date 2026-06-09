@@ -4,6 +4,7 @@ import { addLike, removeLike } from "@/services/artworkService";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack";
 import { Ban } from "lucide-react";
+import type { AxiosError } from "axios";
 
 export type like = {
     id: number;
@@ -15,13 +16,13 @@ export type likes = like[]
 
 export type likesActions = {
     likeArtwork: (artworkId: number) => void;
-    addLikeError: any;
+    addLikeError: unknown;
     isAddingLike: boolean;
     isAddingLikeError: boolean;
     isAddingLikeSuccess: boolean;
 
     unlikeArtwork: (artworkId: number) => void;
-    removeLikeError: any;
+    removeLikeError: unknown;
     isRemovingLike: boolean;
     isRemovingLikeError: boolean;
     isRemovingLikeSuccess: boolean;
@@ -44,10 +45,10 @@ const useLikes = (): likesActions => {
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
             queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => {
             console.error('Error adding like', error);
             toast('Error adding like.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }
@@ -68,10 +69,10 @@ const useLikes = (): likesActions => {
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
             queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => {
             console.error('Error removing like', error);
             toast('Error removing like.', {
-                description: error.response?.data || error.message,
+                description: error.message,
                 icon: <Ban className="text-destructive mr-4" />,
             });
         }

@@ -35,7 +35,7 @@ const ArtworkDetails = ({ artwork, isUserArtist }: props) => {
                 <Badge
                     className="font-semibold"
                 >
-                    {artwork?.category.name}
+                    {artwork?.category?.name || null}
                 </Badge>
                 <h1 className="font-semibold">{artwork?.title}</h1>
             </div>

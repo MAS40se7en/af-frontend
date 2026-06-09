@@ -9,10 +9,6 @@ function AccountLayout() {
     const location = useLocation();
     const pathNameEndsWith = location.pathname.split("account/").pop();
 
-    console.log("location: ", pathNameEndsWith);
-
-    console.log("user image: ", user?.imageUrl);
-
     if (!user) {
         return <Navigate to="/auth/login" replace />
     }

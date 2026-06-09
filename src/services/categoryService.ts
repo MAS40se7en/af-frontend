@@ -58,6 +58,12 @@ export const getCategory = async (
     return response.data;
 }
 
+export const getTopCategories = async () => {
+    const response = await api.get('/categories/top');
+
+    return response.data;
+}
+
 export const deleteCategory = async (categoryId: number) => {
     const response = await api.delete('/categories/' + categoryId);
 

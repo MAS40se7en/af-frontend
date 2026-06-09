@@ -3,6 +3,7 @@ import { isNativeFile, type FileWithPreview } from "@/hooks/use-file-upload";
 import { api } from "@/lib/axios";
 import type { commentSchema, createArtworkSchema } from "@/lib/zod-schemas";
 import type { QueryFunctionContext } from "@tanstack/react-query";
+import type { ArtworkList } from "@/hooks/use-artworks";
 
 export const createArtwork = async ({ files, artwork }: { files: FileWithPreview[], artwork: z.infer<typeof createArtworkSchema> }) => {
     console.log('Artwork added successfully', files, artwork);
@@ -77,6 +78,26 @@ export const removeArtwork = async (artworkId: number) => {
 
 export const fetchMyArtworks = async () => {
     const response = await api.get('/artworks/my-artworks')
+
+    return response.data;
+}
+
+export const fetchArtworks = async (
+    { queryKey }: QueryFunctionContext<[string | undefined, string | undefined]>
+): Promise<ArtworkList[]> => {
+    const [, search] = queryKey;
+
+    const response = await api.get('/artworks', {
+        params: {
+            search
+        }
+    })
+
+    return response.data;
+}
+
+export const fetchHighlightedArtworks = async () => {
+    const response = await api.get('/artworks/highlighted')
 
     return response.data;
 }

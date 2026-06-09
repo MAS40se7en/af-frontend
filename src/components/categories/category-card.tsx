@@ -2,7 +2,8 @@ import type { CategoryList } from "@/hooks/use-categories";
 import { Card, CardContent } from "../ui/card";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Heart } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface CategoryCardProps {
   category: CategoryList;
@@ -25,12 +26,16 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
             " />
         <div className="absolute bottom-3 left-3 right-5 group-hover:right-3 transition-all duration-300 flex justify-between items-center">
           <div>
-            <p className="text-xl font-semibold text-white">
-              {category.name}
+            <p className="flex gap-2 items-center text-xl font-semibold text-white">
+              {category.name} 
+              <Badge variant={"outline"} className="flex gap-1 items-center p-1 text-white">
+                <Heart className="inline-block fill-white" />
+                {category.totalLikes}
+              </Badge>
             </p>
             {isHoveredId === category.id && (
-              <p className="opacity-30 transition-all duration-300 group-hover:opacity-100 text-white">
-                {category.artWorkCount} artworks
+              <p className="opacity-30 transition-all duration-300 group-hover:opacity-100 text-white text-sm">
+                {category.artWorkCount} Artworks
               </p>
             )}
           </div>

@@ -17,13 +17,15 @@ const CategoriesListWrapper = () => {
     isAddingCategorySuccess
   } = useCategories();
 
+  if (isAddingCategorySuccess) {
+    setOpen(false);
+  }
 
   useEffect(() => {
     if (isAddingCategorySuccess) {
-      setOpen(false);
       refetchCategories();
     }
-  }, [isAddingCategorySuccess])
+  }, [isAddingCategorySuccess, refetchCategories])
 
   return (
     <div className="mt-10 flex flex-col items-center justify-center w-full md:w-4/5 lg:w-3/5 px-6 md:px-0 mx-auto">
@@ -33,13 +35,14 @@ const CategoriesListWrapper = () => {
           <p className="text-sm text-muted-foreground">Artworks are grouped in the categories they are assigned to.</p>
         </div>
         {isAdmin && (
-          <CreateCategoryDialog 
-          open={open}
-          setOpen={setOpen}
-          addCategory={addCategory} 
-          addCategoryError={addCategoryError} 
-          isAddingCategory={isAddingCategory}
-          isAddingCategorySuccess={isAddingCategorySuccess} 
+          <CreateCategoryDialog
+            variant="create"
+            open={open}
+            setOpen={setOpen}
+            addCategory={addCategory}
+            addCategoryError={addCategoryError}
+            isAddingCategory={isAddingCategory}
+            isAddingCategorySuccess={isAddingCategorySuccess}
           />
         )}
       </div>

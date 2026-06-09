@@ -1,4 +1,4 @@
-import { useArtworks } from "@/hooks/use-artworks"
+import { useArtworks, type ArtworkList } from "@/hooks/use-artworks"
 import NoElements from "@/components/no-elements";
 import ArtworkCard from "@/components/artworks/artwork-card";
 import UseCategories from "@/hooks/use-categories";
@@ -21,7 +21,7 @@ function MyArtworksWrapper() {
         return (
             <div>
                 <p>Something went wrong while fetching your art works</p>
-                {myArtworksError ? <p>{myArtworksError}</p> : ""}
+                {myArtworksError ? <p>{myArtworksError.message}</p> : ""}
             </div>
         )
     }
@@ -33,7 +33,7 @@ function MyArtworksWrapper() {
                 artwork => artwork.category?.code === selectedCategory
             );
 
-    const sortedArtworks = sortItemsByDate({ items: filteredArtworks, sortOptions: sort });
+    const sortedArtworks = sortItemsByDate({ items: filteredArtworks, sortOptions: sort }) as ArtworkList[];
 
 
     return (

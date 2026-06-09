@@ -4,7 +4,7 @@ import type { QueryFunctionContext } from "@tanstack/react-query";
 import type z from "zod";
 
 export const removeComment = async (commentId: number) => {
-    const response = await api.delete('/comments/' + commentId);
+    const response = await api.delete('/comments/delete/' + commentId);
 
     return response.data;
 }

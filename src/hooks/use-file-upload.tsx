@@ -1,6 +1,6 @@
-import { useMutation, type UseMutateFunction } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
+import { useCallback, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
 import { updateProfilePhoto } from '@/services/imagesService';
 import { toast } from 'sonner';
 import { Ban } from 'lucide-react';
@@ -63,11 +63,11 @@ export type FileUploadActions = {
 };
 
 export type UpdateProfileAction = {
-    updateAvatar: UseMutateFunction<any, unknown, any, unknown>;
+    updateAvatar: (file: File) => void;
     isUpdatingAvatar: boolean;
     isUpdatingAvatarError: boolean;
-    updateAvatarData?: any;
-    updateAvatarError: any;
+    updateAvatarData?: unknown;
+    updateAvatarError: unknown;
     isUpdatingAvatarSuccess: boolean;
 }
 
@@ -114,30 +114,6 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         () => state.files.filter(f => f.file instanceof File),
         [state.files]
     )
-
-    useEffect(() => {
-        if (!initialFiles.length) return;
-
-        setState(prev => {
-            if (prev.files.length > 0) return prev;
-
-            const files = normalizeOrder(
-                initialFiles.map(file => ({
-                    file,
-                    id: file.id,
-                    preview: file.url,
-                    order: file.order
-                }))
-            );
-
-            onFilesChange?.(files);
-
-            return {
-                ...prev,
-                files
-            }
-        })
-    }, [initialFiles])
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -217,113 +193,139 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     }, [onFilesChange]);
 
     const addFiles = useCallback(
-        async (newFiles: FileList | File[]) => {
-            if (!newFiles || newFiles.length === 0) return;
+  async (newFiles: FileList | File[]) => {
+    if (!newFiles || newFiles.length === 0) return;
 
-            const newFilesArray = Array.from(newFiles);
-            const errors: string[] = [];
+    const newFilesArray = Array.from(newFiles);
 
-            setState((prev) => ({ ...prev, errors: [] }));
+    setState((prev) => {
+      const errors: string[] = [];
+      const warnings: string[] = [];
 
-            if (!multiple) {
-                clearFiles();
-            }
+      // reset previous errors
+      const baseState = { ...prev, errors: [] };
 
-            if (multiple && maxFiles !== Number.POSITIVE_INFINITY && state.files.length + newFilesArray.length > maxFiles) {
-                errors.push(`You can only upload a maximum of ${maxFiles} files.`);
-                onError?.(errors);
-                setState((prev) => ({ ...prev, errors }));
-                return;
-            }
+      // handle single-file mode
+      if (!multiple) {
+        clearFiles();
+      }
 
-            const validFiles: FileWithPreview[] = [];
-            const warnings: string[] = [];
+      // max files validation (IMPORTANT: use prev.files, not state.files)
+      if (
+        multiple &&
+        maxFiles !== Number.POSITIVE_INFINITY &&
+        prev.files.length + newFilesArray.length > maxFiles
+      ) {
+        errors.push(`You can only upload a maximum of ${maxFiles} files.`);
 
-            for (const file of newFilesArray) {
-                if (multiple) {
-                    const isDuplicate = state.files.some(
-                        (existingFile) => existingFile.file.name === file.name && existingFile.file.size === file.size,
-                    );
+        onError?.(errors);
 
-                    if (isDuplicate) {
-                        return;
-                    }
-                }
+        return {
+          ...baseState,
+          errors,
+        };
+      }
 
-                if (file.size > maxSize) {
-                    errors.push(
-                        multiple
-                            ? `Some files exceed the maximum size of ${formatBytes(maxSize)}.`
-                            : `File exceeds the maximum size of ${formatBytes(maxSize)}.`,
-                    );
-                    continue;
-                }
+      const validFiles: FileWithPreview[] = [];
 
-                const error = validateFile(file);
-                if (error) {
-                    errors.push(error);
-                } else {
-                    const metadata = file.type.startsWith('image/')
-                     ? await loadImageDimenstions(file)
-                     : { width: 0, height: 0 };
+      const processFiles = async () => {
+        for (const file of newFilesArray) {
+          // duplicate check (use prev.files)
+          if (multiple) {
+            const isDuplicate = prev.files.some(
+              (existingFile) =>
+                existingFile.file.name === file.name &&
+                existingFile.file.size === file.size
+            );
 
-                     if (metadata.width || metadata.width > 1200) {
-                         warnings.push(
-                            `Image "${file.name}" is under 1200px wide. Quality may be reduced.`
-                         )
-                     }
+            if (isDuplicate) continue;
+          }
 
-                    validFiles.push({
-                        file,
-                        id: generateUniqueId(file),
-                        preview: createPreview(file),
-                        ...metadata
-                    });
-                }
-            }
+          // size validation
+          if (file.size > maxSize) {
+            errors.push(
+              multiple
+                ? `Some files exceed the maximum size of ${formatBytes(maxSize)}.`
+                : `File exceeds the maximum size of ${formatBytes(maxSize)}.`
+            );
+            continue;
+          }
 
-            if (validFiles.length > 0) {
-                onFilesAdded?.(validFiles);
+          const error = validateFile(file);
+          if (error) {
+            errors.push(error);
+            continue;
+          }
 
-                setState((prev) => {
-                    const newFiles = !multiple ? validFiles : [...prev.files, ...validFiles];
+          const metadata = file.type.startsWith("image/")
+            ? await loadImageDimenstions(file)
+            : { width: 0, height: 0 };
 
-                    const ordered = normalizeOrder(newFiles);
+          if (metadata.width && metadata.width < 1200) {
+            warnings.push(
+              `Image "${file.name}" is under 1200px wide. Quality may be reduced.`
+            );
+          }
 
-                    onFilesChange?.(ordered);
+          validFiles.push({
+            file,
+            id: generateUniqueId(file),
+            preview: createPreview(file),
+            ...metadata,
+          });
+        }
 
-                    return {
-                        ...prev,
-                        files: ordered,
-                        errors,
-                        warnings
-                    };
-                });
-            } else if (errors.length > 0) {
-                onError?.(errors);
-                setState((prev) => ({
-                    ...prev,
-                    errors
-                }));
-            }
+        if (validFiles.length > 0) {
+          const newList = multiple
+            ? [...prev.files, ...validFiles]
+            : validFiles;
 
-            if (inputRef.current) {
-                inputRef.current.value = '';
-            }
-        },
-        [
-            state.files,
-            maxFiles,
-            multiple,
-            maxSize,
-            validateFile,
-            createPreview,
-            generateUniqueId,
-            clearFiles,
-            onFilesChange,
-            onFilesAdded,
-        ],
-    );
+          const ordered = normalizeOrder(newList);
+
+          onFilesAdded?.(validFiles);
+          onFilesChange?.(ordered);
+
+          setState((finalPrev) => ({
+            ...finalPrev,
+            files: ordered,
+            errors,
+            warnings,
+          }));
+        } else if (errors.length > 0) {
+          onError?.(errors);
+
+          setState((finalPrev) => ({
+            ...finalPrev,
+            errors,
+            warnings,
+          }));
+        }
+
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+      };
+
+      // run async logic safely
+      processFiles();
+
+      // return unchanged state immediately
+      return baseState;
+    });
+  },
+  [
+    multiple,
+    maxFiles,
+    maxSize,
+    validateFile,
+    createPreview,
+    generateUniqueId,
+    clearFiles,
+    onFilesChange,
+    onFilesAdded,
+    onError,
+  ]
+);
 
     const removeFile = useCallback(
         (id: string) => {
@@ -426,10 +428,10 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     const reorderFiles = useCallback((fromIndex: number, toIndex: number) => {
         setState(prev => {
             const updated = reorder(prev.files, fromIndex, toIndex)
-                    .map((file, index) => ({
-                        ...file,
-                        order: index
-                    }));
+                .map((file, index) => ({
+                    ...file,
+                    order: index
+                }));
 
             const reordered = normalizeOrder(updated);
 
@@ -466,9 +468,8 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         mutationKey: ['update-avatar'],
         mutationFn: updateProfilePhoto,
         onSuccess: async () => {
-            console.log('Avatar updated successfully');
             toast.success('Avatar updated successfully.');
-            await refetchUser();
+            refetchUser();
         },
         onError: (error) => {
             console.error('Error updating avatar', error);

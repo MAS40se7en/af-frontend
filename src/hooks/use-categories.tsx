@@ -1,5 +1,5 @@
 import type { createCategorySchema } from "@/lib/zod-schemas";
-import { createCategory, deleteCategory, editCategory, getCategories, getCategory } from "@/services/categoryService";
+import { createCategory, deleteCategory, editCategory, getCategories, getCategory, getTopCategories } from "@/services/categoryService";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import type { FileWithPreview } from "./use-file-upload";
 import type z from "zod";
@@ -26,28 +26,33 @@ export type CategoryList = {
     code: string;
     imageUrl: string;
     artWorkCount: number;
+    totalLikes: number;
     createdAt: Date
 }
 
 export type categoryActions = {
     categories: CategoryList[],
     isPending: boolean,
-    error: any,
+    error: Error | null,
+    topCategories: CategoryList[],
+    isTopCategoriesPending: boolean,
+    topCategoriesError: Error | null,
     addCategory: ({ file, category }: { category: z.infer<typeof createCategorySchema>, file: FileWithPreview }) => void;
-    refetchCategories: () => void
+    refetchCategories: () => void;
+    refetchTopCategories: () => void;
     isAddingCategory: boolean,
     isAddingCategoryError: boolean,
-    addCategoryError: any,
+    addCategoryError: Error | null,
     isAddingCategorySuccess: boolean,
     updateCategory: ({ id, file, category, removeImage }: { id: number, category: z.infer<typeof createCategorySchema>, file: FileWithPreview, removeImage?: boolean }) => void,
     isUpdatingCategory: boolean,
     isUpdatingCategoryError: boolean,
-    updateCategoryError: any,
+    updateCategoryError: Error | null,
     isUpdatingCategorySuccess: boolean,
     destroyCategory: (id: number) => void,
     isDeletingCategory: boolean,
     isDeletingCategoryError: boolean,
-    deleteCategoryError: any,
+    deleteCategoryError: Error | null,
     isDeletingCategorySuccess: boolean
 }
 
@@ -63,6 +68,16 @@ function useCategories(): categoryActions {
         queryKey: ['fetch-categories'],
         queryFn: getCategories,
     });
+
+    const {
+        data: topCategories,
+        isPending: isTopCategoriesPending,
+        error: topCategoriesError,
+        refetch: refetchTopCategories
+    } = useSuspenseQuery({
+        queryKey: ['fetch-top-categories'],
+        queryFn: getTopCategories,
+    })
 
     const {
         mutate: addCategory,
@@ -117,8 +132,12 @@ function useCategories(): categoryActions {
         categories,
         isPending,
         error,
+        topCategories,
+        isTopCategoriesPending,
+        topCategoriesError,
         addCategory,
         refetchCategories,
+        refetchTopCategories,
         isAddingCategory,
         isAddingCategoryError,
         addCategoryError,
@@ -138,7 +157,7 @@ function useCategories(): categoryActions {
 
 export const useCategory = (categoryId: number): {
     category: Category,
-    categoryError: any,
+    categoryError: Error | null,
     refetchCategory: () => void
 } => {
     const {

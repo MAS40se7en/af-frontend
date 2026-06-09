@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Categories from './pages/categories/Categories'
-import Artists from './pages/Artists'
-import Artworks from './pages/Artworks'
+import Artists from './pages/artists/Artists'
+import Artworks from './pages/artworks/Artworks'
 import PublicOnlyRoute from './routes/public-routes'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -16,6 +16,7 @@ import CreateArtwork from './pages/artworks/Create'
 import ShowArtwork from './pages/artworks/Show'
 import EditArtwork from './pages/artworks/Edit'
 import ShowCategory from './pages/categories/Show'
+import ArtistRegister from './pages/auth/ArtistRegister'
 
 function App() {
   return (
@@ -28,14 +29,16 @@ function App() {
           <Route path='/categories' element={<Categories />} />
           <Route path='/categories/:categoryId' element={<ShowCategory />} />
 
-          {/** Artists related routes */}
-          <Route path='/artists' element={<Artists />} />
-
           {/** Art works related routes */}
-          <Route path='/artworks' element={<Artworks />} />
+          <Route path='/artworks/:searchQuery?' element={<Artworks />} />
           <Route path='/create-artwork' element={<CreateArtwork />} />
           <Route path='/artworks/:artworkId/details' element={<ShowArtwork />} />
           <Route path='/artworks/:artworkId/edit' element={<EditArtwork />} />
+
+          {/** Artists related routes */}
+          <Route path='/artists' element={<Artists />} />
+
+          {/** Post related routes */}
 
           {/** Account related routes */}
           <Route path='/account' element={<AccountLayout />}>
@@ -49,6 +52,7 @@ function App() {
         <Route path='/auth' element={<PublicOnlyRoute />}>
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
+          <Route path='/auth/register/artist' element={<ArtistRegister />} />
         </Route>
       </Routes>
     </div>

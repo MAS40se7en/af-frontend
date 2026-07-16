@@ -60,15 +60,12 @@ function EditImage({ image, maxSize, onFileChange, setDrawerOpen }: AvatarUpload
         multiple: false,
         initialFiles: [],
         onFilesChange: handleFileUploadChange,
+        onSuccess: () => {
+            clearFiles();
+            setSelectedImage(undefined);
+            setDrawerOpen?.(false);
+        },
     });
-
-    useEffect(() => {
-    if (isUpdatingAvatarSuccess) {
-        clearFiles();
-        setSelectedImage(undefined);
-        setDrawerOpen?.(false);
-    }
-}, [isUpdatingAvatarSuccess, clearFiles, setDrawerOpen]);
 
 
     const previewUrl = selectedImage || imgSrc;
@@ -149,14 +146,14 @@ function EditImage({ image, maxSize, onFileChange, setDrawerOpen }: AvatarUpload
 
                 </div>
                 <div className="flex gap-3 mt-2">
-                    <Button 
-                        variant="destructive" 
+                    <Button
+                        variant="destructive"
                         onClick={() => clearFiles()}
                         className=""
                     >
                         Clear
                     </Button>
-                    <Button 
+                    <Button
                         variant="secondary"
                         className="flex-1"
                         onClick={handleUpload}

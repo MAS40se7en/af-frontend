@@ -32,18 +32,17 @@ export function formatDate(date: Date | undefined) {
   return `${day}.${month}.${year}`;
 }
 
-export function sortItemsByDate({items, sortOptions}: {
-  items: ArtworkList[] 
-  | Comment[] 
-  | Reply[]
+export function sortItemsByDate<T extends { createdAt: Date }>({
+  items, sortOptions
+}: {
+  items: T[]
   , sortOptions: sortOptions
-}): ArtworkList[] | Comment[] | Reply[] {
-  if (sortOptions.value === "latest") {
-    return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  } else if (sortOptions.value === "oldest") {
-    return items.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-  }
-  return items;
+}): T[] {
+  return [...items].sort((a, b) =>
+    sortOptions.value === "latest"
+      ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
 }
 
 export function loadImageDimenstions(file: File): Promise<{ width: number; height: number }> {

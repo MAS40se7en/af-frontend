@@ -20,7 +20,9 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
     <Card onMouseEnter={() => setIsHoveredId(() => category.id)} onMouseLeave={() => setIsHoveredId(() => null)} className="min-w-55 md:min-w-70 lg:min-w-60 p-0 overflow-hidden group">
       <CardContent onClick={onClick} className="p-0 relative max-h-70 flex items-center justify-center hover:cursor-pointer">
-        <img src={category.imageUrl || "AFbigHeader.png"} alt="category-image" className="
+        <img 
+        loading="lazy"
+        src={category.imageUrl || "AFbigHeader.png"} alt="category-image" className="
               w-auto min-h-70 object-cover transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110 group-hover:blur-[2px]
               group-hover:brightness-70
             " />

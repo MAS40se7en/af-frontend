@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn, sortItemsByDate, type sortOptions } from "@/lib/utils";
 import { PencilLine } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddComment from "./add-comment";
 import CommentItem from "./comment-item";
 import { Separator } from "@/components/ui/separator";
@@ -31,55 +31,16 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
     const [
         commentActions,
         replyActions
-    ] = useCommentsActions();
-
-    const [hoverButton, setHoverButton] = useState(false);
-    const [isAddingComment, setIsAddingComment] = useState(false);
-
-    useEffect(() => {
-        if (commentActions.postCommentSuccess) {
+    ] = useCommentsActions({
+        onSuccess: () => {
             refetchComments();
             refetchArtwork();
             setIsAddingComment(false);
         }
-    }, [
-        commentActions.postComment,
-        commentActions.postCommentSuccess,
-        refetchComments
-    ]);
+    });
 
-    useEffect(() => {
-        if (replyActions.postReplySuccess) {
-            refetchComments();
-            refetchArtwork();
-        }
-    }, [
-        replyActions.postReply,
-        replyActions.postReplySuccess,
-        refetchComments
-    ]);
-
-    useEffect(() => {
-        if (commentActions.isDeletingCommentSuccess) {
-            refetchComments();
-            refetchArtwork();
-        }
-    }, [
-        commentActions.deleteComment,
-        commentActions.isDeletingCommentSuccess,
-        refetchComments
-    ])
-
-    useEffect(() => {
-        if (replyActions.isDeletingReplySuccess) {
-            refetchComments();
-            refetchArtwork();
-        }
-    }, [
-        replyActions.deleteReply,
-        replyActions.isDeletingReplySuccess,
-        refetchComments
-    ])
+    const [hoverButton, setHoverButton] = useState(false);
+    const [isAddingComment, setIsAddingComment] = useState(false);
 
     const sortedComments = sortItemsByDate({ items: comments, sortOptions: sort });
 
@@ -137,7 +98,7 @@ const ArtworkComments = ({ artworkId, refetchArtwork, userId, isUserArtist }: Ar
                 </Dialog>
             </div>
             <div>
-                {commentsError && <div className="text-red-500">{commentsError}</div>}
+                {commentsError && <div className="text-red-500">{commentsError.message}</div>}
                 <ul className="max-h-110 overflow-y-auto outline-3 outline-secondary border-2 border-primary-foreground rounded-lg mt-2 py-2">
                     {sortedComments && sortedComments.map((comment, index) => (
                         <li key={comment.id}>

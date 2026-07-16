@@ -27,6 +27,10 @@ export type Comment = {
     updatedAt: Date;
 }
 
+type Options = {
+    onSuccess?: () => void;
+}
+
 export type ReplyActions = {
     postReply?: ({ commentId, reply, artworkId }: { commentId: number, reply: z.infer<typeof replySchema>, artworkId: number }) => void;
     isPostingReply: boolean,
@@ -53,7 +57,11 @@ export type CommentActions = {
     postCommentSuccess: boolean,
 }
 
-const useCommentsActions = (): [CommentActions, ReplyActions] => {
+const useCommentsActions = (options: Options): [CommentActions, ReplyActions] => {
+    const {
+        onSuccess
+    } = options;
+
     const [lastRepliedCommentId, setLastRepliedCommentId] = useState<number | null>(null);
     const {
         mutate: deleteComment,
@@ -62,7 +70,15 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         error: deleteCommentError
     } = useMutation({
         mutationKey: ['delete-comment'],
-        mutationFn: removeComment
+        mutationFn: removeComment,
+        onSuccess: (artworkId) => {
+            toast.success('Comment deleted successfully.');
+            onSuccess?.();
+
+            queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
+            queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
+            queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
+        }
     })
 
     const {
@@ -76,6 +92,7 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         mutationFn: addComment,
         onSuccess: (artworkId) => {
             toast.success('Comment added successfully.');
+            onSuccess?.();
             queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
@@ -101,6 +118,7 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         onSuccess: ({ artworkId, commentId }) => {
             toast.success('Reply added successfully.');
             setLastRepliedCommentId(commentId);
+            onSuccess?.();
             queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });
@@ -125,6 +143,7 @@ const useCommentsActions = (): [CommentActions, ReplyActions] => {
         onSuccess: ({ artworkId, commentId }) => {
             toast.success('Reply deleted successfully.');
             setLastRepliedCommentId(commentId);
+            onSuccess?.();
             queryClient.invalidateQueries({ queryKey: ['artwork', artworkId] });
             queryClient.invalidateQueries({ queryKey: ['my-artworks'] });
             queryClient.invalidateQueries({ queryKey: ['fetch-user'] });

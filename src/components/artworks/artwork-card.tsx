@@ -1,7 +1,6 @@
 import type { ArtworkList } from "@/hooks/use-artworks"
 import { Card, CardFooter, CardHeader } from "../ui/card"
 import { Badge } from "../ui/badge"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -25,6 +24,7 @@ function ArtworkCard({ artwork }: { artwork: ArtworkList }) {
           <img
             src={artwork.images[0].imageUrl}
             alt="image"
+            loading="lazy"
             className="w-full h-full object-cover aspect-4/3" />
         </div>
       </CardHeader>

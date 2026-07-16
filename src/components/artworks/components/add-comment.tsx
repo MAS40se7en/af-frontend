@@ -11,7 +11,7 @@ interface AddCommentProps {
   artworkId: number;
   postComment?: ({artworkId, comment}: {artworkId: number, comment: z.infer<typeof commentSchema>}) => void;
   postCommentSuccess?: boolean;
-  postCommentError?: any;
+  postCommentError?: unknown;
   isPostingComment?: boolean;
   isPostingCommentError?: boolean;
 }
@@ -34,7 +34,7 @@ const AddComment = ({
     if (postCommentSuccess) {
       form.reset();
     }
-  }, [postCommentSuccess]);
+  }, [postCommentSuccess, form]);
 
   function onSubmit(values: z.infer<typeof commentSchema>) {
     if (!values || !postComment) return;
@@ -66,7 +66,13 @@ const AddComment = ({
                     </InputGroupAddon>
                   </InputGroup>
                   {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error || postCommentError]} />
+                    <FieldError errors={[
+                      {
+                        message: (fieldState.error ? fieldState.error.message : undefined) 
+                      || (typeof postCommentError === "string" 
+                      ? postCommentError : undefined)
+                      }
+                    ]} />
                   )}
                 </Field>
               )}

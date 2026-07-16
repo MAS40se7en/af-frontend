@@ -1,6 +1,6 @@
 import { useArtwork, useArtworks } from "@/hooks/use-artworks";
 import { useFileUpload } from "@/hooks/use-file-upload";
-import { ACCEPTED_TYPES, createArtworkFormSchema, createArtworkSchema, MAX_FILE_SIZE } from "@/lib/zod-schemas";
+import { createArtworkFormSchema, createArtworkSchema, MAX_FILE_SIZE } from "@/lib/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
@@ -15,8 +15,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 const maxSize = MAX_FILE_SIZE;
-
-const acceptedTypes = ACCEPTED_TYPES;
 
 const EditArtworkForm = () => {
   const { artworkId } = useParams();
@@ -53,7 +51,7 @@ const EditArtworkForm = () => {
   const [
     fileState,
     fileActions,
-    _avatarActions,
+    //_avatarActions,
   ] = useFileUpload({
     maxFiles: artwork.images.length > 0 ? 10 - artwork.images.length : 10,
     multiple: true,

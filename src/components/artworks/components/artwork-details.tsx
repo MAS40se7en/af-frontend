@@ -17,9 +17,9 @@ const ArtworkDetails = ({ artwork, isUserArtist }: props) => {
 
     useEffect(() => {
         if (deleteArtworkError) {
-            toast.error(deleteArtworkError);
+            toast.error(deleteArtworkError.message);
         }
-    }, [deleteArtworkError, deleteArtwork, toast]);
+    }, [deleteArtworkError, deleteArtwork]);
 
 
     const handleDelete = () => {
@@ -70,7 +70,7 @@ const ArtworkDetails = ({ artwork, isUserArtist }: props) => {
                                 <AlertDialogTitle>Deleting Artwork!</AlertDialogTitle>
                             </AlertDialogHeader>
                             <AlertDialogDescription>
-                                Are you sure you want to delete this artwork "<span className="font-bold text-destructive">{artwork?.title}</span>"?
+                                Are you sure you want to delete this artwork &quot;<span className="font-bold text-destructive">{artwork?.title}</span>&quot;?
                             </AlertDialogDescription>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>

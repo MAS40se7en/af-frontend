@@ -35,6 +35,7 @@ export type FileUploadOptions = {
     onFilesChange?: (files: FileWithPreview[]) => void;
     onFilesAdded?: (addedFiles: FileWithPreview[]) => void;
     onError?: (errors: string[]) => void;
+    onSuccess?: () => void;
 };
 
 export type FileUploadState = {
@@ -92,6 +93,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         onFilesChange,
         onFilesAdded,
         onError,
+        onSuccess,
     } = options;
 
     const [state, setState] = useState<FileUploadState>({
@@ -470,6 +472,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
         onSuccess: async () => {
             toast.success('Avatar updated successfully.');
             refetchUser();
+            onSuccess?.();
         },
         onError: (error) => {
             console.error('Error updating avatar', error);

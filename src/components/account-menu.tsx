@@ -5,20 +5,14 @@ import { useAuth } from "@/contexts/AuthContext"
 import { GeneratedAvatar } from "./generated-avatar";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { NavLink, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Separator } from "./ui/separator";
 
 function AccountMenu() {
     const { user, signOut } = useAuth();
-    const [open, setOpen] = useState(false);
     const location = useLocation();
 
-    useEffect(() => {
-        setOpen(false);
-    }, [location]);
-
     return (
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenu key={location.pathname}>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-full flex items-center justify-center size-10">
                     {user ? (

@@ -7,9 +7,12 @@ import { sortItemsByDate, type sortOptions } from "@/lib/utils";
 import { useState, useTransition } from "react";
 import useCategories from "@/hooks/use-categories";
 import { Input } from "../ui/input";
+import { useAtomValue } from "jotai";
+import { isAdminAtom } from "@/atoms/auth-atoms";
 
 const ArtowksListWrapper = () => {
-    const { isAdmin } = useAuth();
+    //const { isAdmin } = useAuth();
+    const isAdmin = useAtomValue(isAdminAtom)
     const [search, setSearch] = useState<string | undefined>(undefined);
     const [startTransition] = useTransition();
     const { artworks, artworksError } = useArtworks(search);

@@ -2,9 +2,14 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { ModeToggle } from "@/components/mode-toggle"
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import { useAtomValue } from "jotai";
+import { isUserLoadingAtom, userAtom } from "@/atoms/auth-atoms";
 
 function PublicOnlyRoute() {
-    const { user, isUserLoading } = useAuth();
+    //const { user, isUserLoading } = useAuth();
+    const user = useAtomValue(userAtom)
+    const isUserLoading = useAtomValue(isUserLoadingAtom)
+    
     const navigate = useNavigate();
     const location = useLocation();
 

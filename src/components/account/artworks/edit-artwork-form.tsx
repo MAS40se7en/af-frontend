@@ -34,8 +34,6 @@ const EditArtworkForm = () => {
     }
   });
 
-  console.log(artwork, categories);
-
   useEffect(() => {
     if (artwork) {
       form.reset({

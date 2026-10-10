@@ -1,12 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
 import type React from 'react';
 import { useCallback, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type InputHTMLAttributes } from 'react';
-import { updateProfilePhoto } from '@/services/imagesService';
-import { toast } from 'sonner';
-import { Ban } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import { loadImageDimenstions } from '@/lib/utils';
+import { useAtomValue } from 'jotai';
+import { updateAvatarAtom } from '@/atoms/file-atoms';
 
 export type FileMetadata = {
     name: string;
@@ -82,8 +79,6 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     existingImages: FileWithPreview[],
     newImages: FileWithPreview[],
 }] => {
-    const { refetchUser } = useAuth();
-
     const {
         maxFiles = Number.POSITIVE_INFINITY,
         maxSize = Number.POSITIVE_INFINITY,
@@ -461,27 +456,19 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     );
 
     const {
-        mutate: updateAvatar,
+        mutate,
         isPending: isUpdatingAvatar,
         isError: isUpdatingAvatarError,
         error: updateAvatarError,
         isSuccess: isUpdatingAvatarSuccess
-    } = useMutation({
-        mutationKey: ['update-avatar'],
-        mutationFn: updateProfilePhoto,
-        onSuccess: async () => {
-            toast.success('Avatar updated successfully.');
-            refetchUser();
-            onSuccess?.();
+    } = useAtomValue(updateAvatarAtom);
+
+    const updateAvatar = useCallback(
+        (file: File) => {
+            mutate(file, { onSuccess: () => onSuccess?.() })
         },
-        onError: (error) => {
-            console.error('Error updating avatar', error);
-            toast('error updating avatar.', {
-                description: error.message,
-                icon: <Ban className="text-destructive mr-4" />,
-            });
-        }
-    })
+        [mutate, onSuccess]
+    )
 
     return [
         state,

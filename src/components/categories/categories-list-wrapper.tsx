@@ -3,9 +3,12 @@ import CategoryCard from "./category-card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import CreateCategoryDialog from "./components/create-category";
+import { useAtomValue } from "jotai";
+import { isAdminAtom } from "@/atoms/auth-atoms";
 
 const CategoriesListWrapper = () => {
-  const { isAdmin } = useAuth();
+  // const { isAdmin } = useAuth();
+  const isAdmin = useAtomValue(isAdminAtom)
   const [open, setOpen] = useState<boolean>(false);
 
   const {

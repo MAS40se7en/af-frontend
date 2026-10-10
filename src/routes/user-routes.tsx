@@ -1,9 +1,12 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import NavigationHeader from "@/components/navigation-header";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAtomValue } from "jotai";
+import { isUserLoadingAtom, userAtom } from "@/atoms/auth-atoms";
 
 const UserRoutes = () => {
-  const { user, isUserLoading } = useAuth();
+  // const { user, isUserLoading } = useAuth();
+  const user = useAtomValue(userAtom)
+  const isUserLoading = useAtomValue(isUserLoadingAtom)
   const location = useLocation();
 
   if (isUserLoading) {

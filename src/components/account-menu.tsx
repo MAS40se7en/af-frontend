@@ -6,9 +6,13 @@ import { GeneratedAvatar } from "./generated-avatar";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { NavLink, useLocation } from "react-router-dom";
 import { Separator } from "./ui/separator";
+import { useAtom, useAtomValue } from "jotai";
+import { signOutAtom, userAtom } from "@/atoms/auth-atoms";
 
 function AccountMenu() {
-    const { user, signOut } = useAuth();
+    // const { user, signOut } = useAuth();
+    const user = useAtomValue(userAtom)
+    const [{ mutate: signOut }] = useAtom(signOutAtom)
     const location = useLocation();
 
     return (
@@ -63,7 +67,7 @@ function AccountMenu() {
                             <Button
                                 variant="outline"
                                 className="w-full h-full"
-                                onClick={signOut}>
+                                onClick={() => signOut()}>
                                 Logout
                             </Button>
                         </DropdownMenuItem>

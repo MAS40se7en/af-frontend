@@ -7,9 +7,12 @@ import { loginFormSchema } from "@/lib/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type z from "zod";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAtom } from "jotai";
+import { signInAtom } from "@/atoms/auth-atoms";
 
 function LoginForm() {
-    const { signIn } = useAuth();
+    // const { signIn } = useAuth();
+    const [{ mutate: signIn }] = useAtom(signInAtom)
 
     const form = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
